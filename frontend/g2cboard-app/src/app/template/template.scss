@@ -1,0 +1,15 @@
+.sidebar {
+    height: 100vh;
+    padding: 10px;
+    width: 100px;
+    background-color: black;
+    color: white;
+}
+
+.selection {
+    transform: scale(1.03)
+}
+
+.selection::after {
+    transition: all 3s ease;
+}

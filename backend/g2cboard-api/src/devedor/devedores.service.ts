@@ -16,14 +16,14 @@ export class DevedoresService {
   ) {}
 
   private limite = new Bottleneck({
-    reservoir: 199,
-    reservoirRefreshAmount: 199,
+    reservoir: 100,
+    reservoirRefreshAmount: 100,
     reservoirRefreshInterval: 60 * 1000,
     maxConcurrent: 10,
     minTime: 300,
   });
 
-  private async getDevedoresApi() {
+  async getDevedoresApi() {
     const resp = await axios.get(
       `${this.configService.get<string>('API_URL_BASE')}/procurarPorVencida`,
       {
@@ -34,7 +34,9 @@ export class DevedoresService {
         },
       },
     );
-    const numFaturas = resp.data;
+    const numFaturas = resp.data.slice(640, 2000)
+
+    let i = 0
 
     const respDevedores = await Promise.all(
       numFaturas.map(async (num: string) =>
@@ -49,6 +51,9 @@ export class DevedoresService {
               senhaApi: this.configService.get<string>('API_PASS'),
             },
           });
+          i++
+          console.log({ i: i, nome: fatura.data.beneficiario.nome,
+            saldoDevedor: fatura.data.valorCobranca, })
           return {
             nome: fatura.data.beneficiario.nome,
             saldoDevedor: fatura.data.valorCobranca,
