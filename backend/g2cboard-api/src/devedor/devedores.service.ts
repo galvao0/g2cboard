@@ -16,11 +16,11 @@ export class DevedoresService {
   ) {}
 
   private limite = new Bottleneck({
-    reservoir: 100,
-    reservoirRefreshAmount: 100,
+    reservoir: 80,
+    reservoirRefreshAmount: 80,
     reservoirRefreshInterval: 60 * 1000,
-    maxConcurrent: 10,
-    minTime: 300,
+    maxConcurrent: 5,
+    minTime: 750,
   });
 
   async getDevedoresApi() {
@@ -34,9 +34,9 @@ export class DevedoresService {
         },
       },
     );
-    const numFaturas = resp.data.slice(640, 2000)
+    const numFaturas = resp.data;
 
-    let i = 0
+    let i = 0;
 
     const respDevedores = await Promise.all(
       numFaturas.map(async (num: string) =>
@@ -51,9 +51,12 @@ export class DevedoresService {
               senhaApi: this.configService.get<string>('API_PASS'),
             },
           });
-          i++
-          console.log({ i: i, nome: fatura.data.beneficiario.nome,
-            saldoDevedor: fatura.data.valorCobranca, })
+          i++;
+          console.log({
+            i: i,
+            nome: fatura.data.beneficiario.nome,
+            saldoDevedor: fatura.data.valorCobranca,
+          });
           return {
             nome: fatura.data.beneficiario.nome,
             saldoDevedor: fatura.data.valorCobranca,
@@ -62,7 +65,18 @@ export class DevedoresService {
       ),
     );
 
-    return respDevedores;
+    const devedores = new Map<string, number>();
+
+    for (const devedor of respDevedores) {
+      const valorAtual = devedores.get(devedor.nome) ?? 0;
+
+      devedores.set(devedor.nome, valorAtual + devedor.saldoDevedor);
+    }
+
+    return Array.from(devedores, ([nome, saldoDevedor]) => ({
+      nome,
+      saldoDevedor,
+    }));
   }
 
   async sincronizarDevedores() {
@@ -71,7 +85,10 @@ export class DevedoresService {
       const devedorExiste = await this.devedorRepository.findOneBy({
         nome: devedor.nome,
       });
-      if (!devedorExiste) {
+      if (devedorExiste) {
+        devedorExiste.saldoDevedor = devedor.saldoDevedor;
+        await this.devedorRepository.save(devedorExiste);
+      } else {
         const dev = this.devedorRepository.create({
           nome: devedor.nome,
           saldoDevedor: devedor.saldoDevedor,
