@@ -1,6 +1,11 @@
 :host {
-  --sidebar-bg: #fff;
+  --sidebar-bg: #181818;
   --border-color: #bdbdbd;
+  --font-color: #818181;
+  --icon-logo-bg: #BCF227;
+  --icon-item-color: #999595;
+  --op-select-bg: rgba(120, 133, 110, 0.24);
+  --op-select-color: #e6dede;
 }
 
 .container {
@@ -19,9 +24,95 @@
 }
 
 .active {
-  color: red;
+  background-color: var(--op-select-bg);
+  border-radius: 7px;
+  padding: 10px;
+  a {
+    color: var(--op-select-color) !important;
+    font-size: 0.95rem !important;
+    font-weight: 500;
+  }
+  .icon-item {
+    color: var(--op-select-color) !important;
+  }
 }
 
 .menu {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-menu {
+  background: none;
+  border: none;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  gap: 12px
+}
+
+.titulo {
+  font-size: 1.1rem;
+}
+
+.op-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: all 0.5s ease;
+
+  a {
+    text-decoration: none;
+    color: var(--font-color);
+    font-size: 0.9rem;
+  }
+
+  .icon-item {
+    color: var(--icon-item-color);
+    font-size: 1.4rem;
+  }
+}
+
+.op-nav {
+  margin-left: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.titulo-nav {
+  font-size: 0.7rem;
+  color: var(--font-color);
+  padding-top: 20px;
+  margin-bottom: 12px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  padding-block: 7px;
+  gap: 15px;
+  margin-left: 3px;
+  margin-bottom: 6px;
+
+  .logo-icon {
+    background-color: var(--icon-logo-bg);
+    padding: 4px;
+    border-radius: 7px;
+    box-shadow: 5px 5px 0px 0px #323d12;
+  }
+
+  .logo-nome {
+    font-size: 0.95rem;
+    color: #c2c2c2;
+    font-weight: 500;
+  }
+}
+
+.outlet {
+  padding: 10px;
 }

@@ -36,6 +36,7 @@ export class DevedoresService {
     );
     const numFaturas = resp.data;
 
+    console.log(numFaturas)
     let i = 0;
 
     const respDevedores = await Promise.all(
@@ -86,13 +87,15 @@ export class DevedoresService {
         nome: devedor.nome,
       });
       if (devedorExiste) {
-        devedorExiste.saldoDevedor = devedor.saldoDevedor;
-        await this.devedorRepository.save(devedorExiste);
+        //devedorExiste.saldoDevedor = devedor.saldoDevedor;
+        //await this.devedorRepository.save(devedorExiste);
+        this.devedorRepository.createQueryBuilder('devedor').select(`UPDATE devedor set saldoDevedor=${devedor.saldoDevedor} where nome=${devedorExiste.nome}`)
       } else {
         const dev = this.devedorRepository.create({
           nome: devedor.nome,
           saldoDevedor: devedor.saldoDevedor,
         });
+        
         await this.devedorRepository.save(dev);
       }
     }

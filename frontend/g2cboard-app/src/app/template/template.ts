@@ -14,6 +14,7 @@ export class Template {
   constructor(public router: Router) {}
   getTitulo() {
     if (this.router.url === '/') return 'Dashboard';
+    else if (this.router.url === '/listadevedores') return 'Lista de Devedores'
     return '';
   }
 }
