@@ -1,28 +1,25 @@
-<div>
-    <aside class="sidebar">
-        <div>
-            <p>G2cBoard</p>
-        </div>
-        <nav class="sidebar-menu">
-            <div class="selection active">
-                <mat-icon class="mat-icon-rtl-mirror" svgIcon="thumb-up"></mat-icon>
-                <span>Dashboard</span>
-            </div>
-            <div class=" selection">
-                <mat-icon></mat-icon>
-                <span>Devedores</span>
-            </div>
-            <div class="selection">
-                <mat-icon></mat-icon>
-                <span>Graficos</span>
-            </div>
-            <div class="selection">
-                <mat-icon></mat-icon>
-                <span>Configurações</span>
-            </div>
-        </nav>
-    </aside>
-    <div class="main-content">
-        <router-outlet></router-outlet>
-    </div>
-</div>
+<mat-sidenav-container class="container">
+  <mat-sidenav #sidenav opened mode="side" class="sidebar">
+    <div class="logo"></div>
+    <mat-divider></mat-divider>
+    <nav class="menu">
+      <span>nav</span>
+      <div [class.active]="router.url === '/'">
+        <mat-icon>dashboard</mat-icon>
+        <a routerLink="/board">Dashboard</a>
+      </div>
+    </nav>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <main>
+      <header>
+        <button (click)="sidenav.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <span>{{ getTitulo() }}</span>
+      </header>
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

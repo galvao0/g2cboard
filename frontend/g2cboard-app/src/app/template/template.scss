@@ -1,15 +1,27 @@
+:host {
+  --sidebar-bg: #fff;
+  --border-color: #bdbdbd;
+}
+
+.container {
+  height: 100vh;
+}
+
 .sidebar {
-    height: 100vh;
-    padding: 10px;
-    width: 100px;
-    background-color: black;
-    color: white;
+  width: 260px;
+  background: var(--sidebar-bg) !important;
+  border-right: 1px solid var(--border-color) !important;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px;
+  box-sizing: border-box;
+  border-radius: 0 !important;
 }
 
-.selection {
-    transform: scale(1.03)
+.active {
+  color: red;
 }
 
-.selection::after {
-    transition: all 3s ease;
+.menu {
+  display: flex;
 }
