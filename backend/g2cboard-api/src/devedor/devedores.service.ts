@@ -16,11 +16,11 @@ export class DevedoresService {
   ) {}
 
   private limite = new Bottleneck({
-    reservoir: 80,
-    reservoirRefreshAmount: 80,
+    reservoir: 50,
+    reservoirRefreshAmount: 50,
     reservoirRefreshInterval: 60 * 1000,
     maxConcurrent: 5,
-    minTime: 750,
+    minTime: 1200,
   });
 
   async getDevedoresApi() {
@@ -34,10 +34,8 @@ export class DevedoresService {
         },
       },
     );
-    const numFaturas = resp.data;
-
-    console.log(numFaturas)
-    let i = 0;
+    console.log(resp.data)
+    const numFaturas = resp.data.slice(1800, 2000);
 
     const respDevedores = await Promise.all(
       numFaturas.map(async (num: string) =>
@@ -52,12 +50,10 @@ export class DevedoresService {
               senhaApi: this.configService.get<string>('API_PASS'),
             },
           });
-          i++;
           console.log({
-            i: i,
             nome: fatura.data.beneficiario.nome,
             saldoDevedor: fatura.data.valorCobranca,
-          });
+          })
           return {
             nome: fatura.data.beneficiario.nome,
             saldoDevedor: fatura.data.valorCobranca,
@@ -74,10 +70,13 @@ export class DevedoresService {
       devedores.set(devedor.nome, valorAtual + devedor.saldoDevedor);
     }
 
-    return Array.from(devedores, ([nome, saldoDevedor]) => ({
+    const d = Array.from(devedores, ([nome, saldoDevedor]) => ({
       nome,
       saldoDevedor,
     }));
+
+    console.log(d)
+    return d
   }
 
   async sincronizarDevedores() {
@@ -87,9 +86,8 @@ export class DevedoresService {
         nome: devedor.nome,
       });
       if (devedorExiste) {
-        //devedorExiste.saldoDevedor = devedor.saldoDevedor;
-        //await this.devedorRepository.save(devedorExiste);
-        this.devedorRepository.createQueryBuilder('devedor').select(`UPDATE devedor set saldoDevedor=${devedor.saldoDevedor} where nome=${devedorExiste.nome}`)
+        devedorExiste.saldoDevedor = devedor.saldoDevedor;
+        await this.devedorRepository.save(devedorExiste);
       } else {
         const dev = this.devedorRepository.create({
           nome: devedor.nome,
@@ -104,4 +102,34 @@ export class DevedoresService {
   async getDevedores() {
     return await this.devedorRepository.find();
   }
+
+  async g() {
+    const devedoresDb = await this.devedorRepository.find()
+    const devedorMap = new Map<string, number>()
+
+    for (let devedor of devedoresDb) {
+      const vAtutal = devedorMap.get(devedor.nome) ?? 0
+      devedorMap.set(devedor.nome, devedor.saldoDevedor + vAtutal)
+    }
+
+    const devedores = Array.from(devedorMap, ([nome, saldoDevedor]) => ({
+      nome,
+      saldoDevedor
+    }))
+
+    for (let dev of devedores) {
+      this.devedorRepository.save(dev)
+    }
+
+    console.log(devedores)
+    return devedores
+  }
+
+  async formatarDb() {
+    await this.devedorRepository.deleteAll()
+  }
+
+  //async getEstatistica() {
+    //return { total: this.devedorRepository.createQueryBuilder('devedor').select('SUM(devedores.saldoDevedor), total') }
+  //}
 }

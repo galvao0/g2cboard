@@ -6,7 +6,7 @@ export class DevedoresController {
     constructor(private readonly devedoresService: DevedoresService) {}
     @Get()
     getFaturas() {
-        return this.devedoresService.getDevedores()
+        return this.devedoresService.getDevedoresApi()
     }
     @Get('/sincronizar')
     sincronizarDevedores() {
