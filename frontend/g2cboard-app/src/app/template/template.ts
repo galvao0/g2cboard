@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatDivider } from '@angular/material/divider';
@@ -8,13 +8,13 @@ import { MatDivider } from '@angular/material/divider';
   selector: 'app-template',
   templateUrl: './template.html',
   styleUrl: './template.scss',
-  imports: [RouterOutlet, MatSidenavModule, MatIcon, MatDivider, RouterLink],
+  imports: [RouterOutlet, MatSidenavModule, MatIcon, MatDivider, RouterLink, RouterLinkActive],
 })
 export class Template {
   constructor(public router: Router) {}
   getTitulo() {
     if (this.router.url === '/') return 'Dashboard';
-    else if (this.router.url === '/listadevedores') return 'Lista de Devedores'
+    else if (this.router.url === '/listadevedores') return 'Lista de Devedores';
     return '';
   }
 }

@@ -23,6 +23,34 @@ export class DevedoresService {
     minTime: 1200,
   });
 
+  private async buscarFatura(num: string) {
+    while (true) {
+      try {
+        const fatura = await axios.get<{
+          valorCobranca: number;
+          beneficiario: { nome: string };
+        }>(`${this.configService.get<string>('API_URL_BASE')}/${num}`, {
+          headers: {
+            accept: 'application/json',
+            token: this.configService.get<string>('API_TOKEN'),
+            senhaApi: this.configService.get<string>('API_PASS'),
+          },
+        });
+        return {
+          nome: fatura.data.beneficiario.nome,
+          saldoDevedor: fatura.data.valorCobranca,
+        };
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 429) {
+          console.log('rl');
+          await new Promise((r) => setTimeout(r, 5000));
+          continue;
+        }
+        throw error;
+      }
+    }
+  }
+
   async getDevedoresApi() {
     const resp = await axios.get(
       `${this.configService.get<string>('API_URL_BASE')}/procurarPorVencida`,
@@ -34,30 +62,13 @@ export class DevedoresService {
         },
       },
     );
-    console.log(resp.data)
-    const numFaturas = resp.data.slice(1800, 2000);
+    const numFaturas = resp.data;
 
     const respDevedores = await Promise.all(
       numFaturas.map(async (num: string) =>
         this.limite.schedule(async () => {
-          const fatura = await axios.get<{
-            valorCobranca: number;
-            beneficiario: { nome: string };
-          }>(`${this.configService.get<string>('API_URL_BASE')}/${num}`, {
-            headers: {
-              accept: 'application/json',
-              token: this.configService.get<string>('API_TOKEN'),
-              senhaApi: this.configService.get<string>('API_PASS'),
-            },
-          });
-          console.log({
-            nome: fatura.data.beneficiario.nome,
-            saldoDevedor: fatura.data.valorCobranca,
-          })
-          return {
-            nome: fatura.data.beneficiario.nome,
-            saldoDevedor: fatura.data.valorCobranca,
-          };
+          const devedor = await this.buscarFatura(num);
+          return devedor;
         }),
       ),
     );
@@ -75,8 +86,8 @@ export class DevedoresService {
       saldoDevedor,
     }));
 
-    console.log(d)
-    return d
+    console.log(d);
+    return d;
   }
 
   async sincronizarDevedores() {
@@ -93,7 +104,7 @@ export class DevedoresService {
           nome: devedor.nome,
           saldoDevedor: devedor.saldoDevedor,
         });
-        
+
         await this.devedorRepository.save(dev);
       }
     }
@@ -104,32 +115,32 @@ export class DevedoresService {
   }
 
   async g() {
-    const devedoresDb = await this.devedorRepository.find()
-    const devedorMap = new Map<string, number>()
+    const devedoresDb = await this.devedorRepository.find();
+    const devedorMap = new Map<string, number>();
 
     for (let devedor of devedoresDb) {
-      const vAtutal = devedorMap.get(devedor.nome) ?? 0
-      devedorMap.set(devedor.nome, devedor.saldoDevedor + vAtutal)
+      const vAtutal = devedorMap.get(devedor.nome) ?? 0;
+      devedorMap.set(devedor.nome, devedor.saldoDevedor + vAtutal);
     }
 
     const devedores = Array.from(devedorMap, ([nome, saldoDevedor]) => ({
       nome,
-      saldoDevedor
-    }))
+      saldoDevedor,
+    }));
 
     for (let dev of devedores) {
-      this.devedorRepository.save(dev)
+      this.devedorRepository.save(dev);
     }
 
-    console.log(devedores)
-    return devedores
+    console.log(devedores);
+    return devedores;
   }
 
   async formatarDb() {
-    await this.devedorRepository.deleteAll()
+    await this.devedorRepository.deleteAll();
   }
 
   //async getEstatistica() {
-    //return { total: this.devedorRepository.createQueryBuilder('devedor').select('SUM(devedores.saldoDevedor), total') }
+  //return { total: this.devedorRepository.createQueryBuilder('devedor').select('SUM(devedores.saldoDevedor), total') }
   //}
 }
