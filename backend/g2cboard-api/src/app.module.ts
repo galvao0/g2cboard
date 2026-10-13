@@ -5,9 +5,11 @@ import { DevedoresModule } from './devedor/devedores.module.js';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DevedorEntity } from './devedor/devedor.entity.js';
+import { FaturasModule } from './faturas/faturas.module.js';
+import { FaturasEntity } from './faturas/faturas.entity.js';
 
 @Module({
-  imports: [DevedoresModule, ConfigModule.forRoot({
+  imports: [DevedoresModule, FaturasModule, ConfigModule.forRoot({
     isGlobal: true
   }),
   TypeOrmModule.forRoot({
@@ -17,7 +19,7 @@ import { DevedorEntity } from './devedor/devedor.entity.js';
     username: 'postgres',
     password: '774805',
     database: 'devedores',
-    entities: [DevedorEntity],
+    entities: [DevedorEntity, FaturasEntity],
     autoLoadEntities: true,
     synchronize: true
   })
