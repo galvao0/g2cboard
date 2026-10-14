@@ -2,50 +2,44 @@
 export class DevedorService {
   constructor(
       @InjectRepository(DevedorEntity)
-          private readonly devedorRepository: Repository<DevedorEntity>,
+      private readonly devedorRepository: Repository<DevedorEntity>,
 
-              @InjectRepository(FaturasEntity)
-                  private readonly faturasRepository: Repository<FaturasEntity>,
-                    ) {}
+      @InjectRepository(FaturasEntity)
+      private readonly faturasRepository: Repository<FaturasEntity>,
+  ) {}
 
-                      async sincronizarDevedores() {
-                          const faturas = await this.faturasRepository.find();
+  async sincronizarDevedores() {
+    const faturas = await this.faturasRepository.find();
+    const grupos = new Map<string, FaturasEntity[]>();
 
-                              const grupos = new Map<string, FaturasEntity[]>();
+    for (const fatura of faturas) {
+      const cpf = fatura.cpfDevedor;
 
-                                  for (const fatura of faturas) {
-                                        const cpf = fatura.cpfDevedor;
+      if (!cpf) continue;
 
-                                              if (!cpf) continue;
+      const grupo = grupos.get(cpf) ?? [];
+      grupo.push(fatura);
+      grupos.set(cpf, grupo);
+    }
 
-                                                    const grupo = grupos.get(cpf) ?? [];
-                                                          grupo.push(fatura);
-                                                                grupos.set(cpf, grupo);
-                                                                    }
+    for (const [cpf, faturasDevedor] of grupos) {
+      const total = faturasDevedor.reduce(
+        (soma, fatura) => soma + Number(fatura.valor), 0);
+      const devedorExiste = await this.devedorRepository.findOneBy({cpf});
 
-                                                                        for (const [cpf, faturasDevedor] of grupos) {
-                                                                              const total = faturasDevedor.reduce(
-                                                                                      (soma, fatura) => soma + Number(fatura.valor),
-                                                                                              0,
-                                                                                                    );
+      if (!devedorExistente) {
+        const devedor = this.devedorRepository.create({
+          cpf,
+          nome: faturasDevedor[0].nomeDevedor,
+          codigo: codigo,
+          saldoDevedor: total,
+      });
 
-                                                                                                          const existente = await this.devedorRepository.findOneBy({
-                                                                                                                  cpf,
-                                                                                                                        });
-
-                                                                                                                              if (!existente) {
-                                                                                                                                      const devedor = this.devedorRepository.create({
-                                                                                                                                                cpf,
-                                                                                                                                                          nome: faturasDevedor[0].nomeDevedor,
-                                                                                                                                                                    codigo: cpf,
-                                                                                                                                                                              saldoDevedor: total,
-                                                                                                                                                                                      });
-
-                                                                                                                                                                                              await this.devedorRepository.save(devedor);
-                                                                                                                                                                                                    } else {
-                                                                                                                                                                                                            existente.saldoDevedor = total;
-                                                                                                                                                                                                                    await this.devedorRepository.save(existente);
-                                                                                                                                                                                                                          }
-                                                                                                                                                                                                                              }
-                                                                                                                                                                                                                                }
-                                                                                                                                                                                                                                }
+      await this.devedorRepository.save(devedor);
+      } else {
+        devedorExistente.saldoDevedor = total;
+        await this.devedorRepository.save(existente);
+      }
+    }
+  }                                                                                                                                                         
+}
