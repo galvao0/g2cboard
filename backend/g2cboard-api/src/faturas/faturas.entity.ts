@@ -18,6 +18,8 @@ export class FaturasEntity {
     @Column({ nullable: true })
     codigoPix: string
 
-    @ManyToOne(() => DevedorEntity, (devedor) => devedor.faturas)
+    @ManyToOne(() => DevedorEntity, (devedor) => devedor.faturas,  { nullable: true })
     devedor: DevedorEntity[]
+    @JoinColumn({ name: 'devedor_id' })
+    devedor: DevedorEntity | null;
 }

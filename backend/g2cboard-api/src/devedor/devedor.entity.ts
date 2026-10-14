@@ -1,17 +1,21 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { FaturasEntity } from "../faturas/faturas.entity.js";
 
-@Entity('devedor') 
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+
+import { FaturasEntity } from '../faturas/faturas.entity.js';
+
+@Entity('devedores')
 export class DevedorEntity {
     @PrimaryGeneratedColumn('uuid')
-    id: string
+    id: string;
+    @Column({ unique: true })
+    cpf: string;
     @Column()
-    codigo: string
-    @Column()
-    nome: string
-    @Column({ type: 'decimal' })
-    saldoDevedor: number
-
+    nome: string;
     @OneToMany(() => FaturasEntity, (fatura) => fatura.devedor)
-    faturas: FaturasEntity[]
+    faturas: FaturasEntity[];
 }

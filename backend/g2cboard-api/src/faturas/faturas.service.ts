@@ -32,7 +32,7 @@ export class FaturasService {
           linkFatura: string
           linhaDigitavel: string
           pixList: { brcode: string }
-          beneficiario: { nome: string }
+          beneficiario: { nome: string, cpf: string }
         }>(`${this.configService.get<string>('API_URL_BASE')}/${num}?pix=1`, {
           headers: {
             accept: 'application/json',
@@ -55,8 +55,9 @@ export class FaturasService {
           vencimento: fatura.data.dataVencimento,
           linkFatura: fatura.data.linkFatura,
           codigoBarras: fatura.data.linhaDigitavel,
-          codigoPix: fatura.data.pixList.brcode
-        
+          codigoPix: fatura.data.pixList.brcode,
+          devedor: fatura.data.beneficiario.nome,
+          cpf: fatura.data.beneficiario.cpf
         };
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 429) {
