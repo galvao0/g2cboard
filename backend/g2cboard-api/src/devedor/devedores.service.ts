@@ -1,3 +1,5 @@
+import { Injectable } from '@nestjs/common';
+
 @Injectable()
 export class DevedorService {
   constructor(
@@ -10,35 +12,35 @@ export class DevedorService {
 
   async sincronizarDevedores() {
     const faturas = await this.faturasRepository.find();
-    const grupos = new Map<string, FaturasEntity[]>();
+    const devedores = new Map<string, FaturasEntity[]>();
 
     for (const fatura of faturas) {
       const cpf = fatura.cpfDevedor;
 
       if (!cpf) continue;
 
-      const grupo = grupos.get(cpf) ?? [];
-      grupo.push(fatura);
-      grupos.set(cpf, grupo);
+      const devedor = devedores.get(cpf) ?? [];
+      devedor.push(fatura);
+      devedores.set(cpf, devedor);
     }
 
-    for (const [cpf, faturasDevedor] of grupos) {
-      const total = faturasDevedor.reduce(
+    for (const [cpf, faturasDevedor] of devedores) {
+      const totalDevedor = faturasDevedor.reduce(
         (soma, fatura) => soma + Number(fatura.valor), 0);
-      const devedorExiste = await this.devedorRepository.findOneBy({cpf});
+      const devedorExiste = await this.devedorRepository.findOneBy({ cpf });
 
-      if (!devedorExistente) {
-        const devedor = this.devedorRepository.create({
+      if (!devedorExiste) {
+        const dev = this.devedorRepository.create({
           cpf,
           nome: faturasDevedor[0].nomeDevedor,
           codigo: codigo,
-          saldoDevedor: total,
+          saldoDevedor: totalDevedor,
       });
 
-      await this.devedorRepository.save(devedor);
+      await this.devedorRepository.save(dev);
       } else {
-        devedorExistente.saldoDevedor = total;
-        await this.devedorRepository.save(existente);
+        devedorExiste.saldoDevedor = totalDevedor;
+        await this.devedorRepository.save(devedorExiste);
       }
     }
   }                                                                                                                                                         
