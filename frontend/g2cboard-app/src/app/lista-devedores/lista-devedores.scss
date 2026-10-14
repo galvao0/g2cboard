@@ -1,3 +1,91 @@
+:host {
+  --txt-color-qtd: #242323;
+  --div-qtd-color: #81af03;
+  --font-color: #9298a5;
+  --font-color-real: #545f36;
+}
+
 .content {
     padding: 10px;
+}
+
+table {
+    width: 60%;
+
+    .th-100 {
+        display: flex;
+    }
+
+    thead {
+        th {
+            border: 1px dashed var(--txt-color-qtd);
+            color: #747474;
+            font-weight: 600;
+            font-size: 0.8rem;
+            border-radius: 2px;
+        }
+
+        .th-chevron {
+            border: none;
+        }
+    }
+
+    .margin {
+        margin-bottom: 10px !important;
+    }
+
+    .th-nfaturas {
+        display: flex;
+        justify-content: center;
+    }
+
+    .cont-nfaturas {
+        width: 20px;
+        height: 20px;
+        border-radius: 100%;
+        background-color: var(--div-qtd-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--txt-color-qtd);
+        font-weight: 900;
+        border: 1px solid #222c23;
+    }
+
+    .cpf {
+        color: #d3d3d3;
+        font-weight: 500;
+    }
+
+    button {
+        background: none;
+        cursor: pointer;
+        border: none;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+
+        svg {
+            color: var(--font-color);
+        }
+    }
+
+    .tr-faturas-inter {
+        width: 100%;
+        th {
+            color: #9298a5;
+            font-weight: 500;
+            
+            svg {
+                width: 10px;
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+@media(max-width: 1800px) {
+    table {
+        width: 100%;
+    }
 }

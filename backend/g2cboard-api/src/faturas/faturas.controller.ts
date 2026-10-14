@@ -6,6 +6,6 @@ export class FaturasController {
     constructor(private readonly faturasService: FaturasService) {}
     @Get()
     getFaturas(): any {
-        return this.faturasService.asyncDbFaturas()
+        return this.faturasService.getFaturasDb()
     }
 }

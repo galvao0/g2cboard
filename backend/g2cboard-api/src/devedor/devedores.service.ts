@@ -1,21 +1,28 @@
 import { Injectable } from '@nestjs/common';
+import { FaturasEntity } from '../faturas/faturas.entity.js';
+import { Repository } from 'typeorm';
+import { DevedorEntity } from './devedor.entity.js';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FaturasService } from '../faturas/faturas.service.js';
 
 @Injectable()
-export class DevedorService {
+export class DevedoresService {
   constructor(
       @InjectRepository(DevedorEntity)
       private readonly devedorRepository: Repository<DevedorEntity>,
 
       @InjectRepository(FaturasEntity)
       private readonly faturasRepository: Repository<FaturasEntity>,
+
+      private readonly faturasService: FaturasService,
   ) {}
 
-  async sincronizarDevedores() {
+  private async sincronizarDevedores() {
     const faturas = await this.faturasRepository.find();
     const devedores = new Map<string, FaturasEntity[]>();
 
     for (const fatura of faturas) {
-      const cpf = fatura.cpfDevedor;
+      const cpf = fatura.cpf;
 
       if (!cpf) continue;
 
@@ -31,17 +38,30 @@ export class DevedorService {
 
       if (!devedorExiste) {
         const dev = this.devedorRepository.create({
-          cpf,
-          nome: faturasDevedor[0].nomeDevedor,
-          codigo: codigo,
-          saldoDevedor: totalDevedor,
-      });
+          cpf: cpf,
+          nome: faturasDevedor[0].nome,
+          totalDevedor: totalDevedor,
+          faturas: faturasDevedor
+        });
 
-      await this.devedorRepository.save(dev);
+        
+
+        await this.devedorRepository.save(dev);
       } else {
-        devedorExiste.saldoDevedor = totalDevedor;
+        devedorExiste.totalDevedor = totalDevedor;
         await this.devedorRepository.save(devedorExiste);
       }
     }
-  }                                                                                                                                                         
+  }            
+  
+  async getDevedores() {
+    await this.faturasService.asyncDbFaturas();
+    this.sincronizarDevedores();
+
+    return this.devedorRepository.find({
+      relations: {
+        faturas: true,
+      },
+    });
+  }
 }

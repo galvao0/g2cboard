@@ -1,5 +1,45 @@
 <div class="content">
-    <div>
-        
-    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>CPF</th>
+                <th>NOME</th>
+                <th>TOTAL DEVEDOR</th>
+                <th>N° FATURAS</th>
+                <th class="th-chevron"></th>
+            </tr>
+        </thead>
+        <div class="margin"></div>
+        <tbody>
+            @for (devedor of devedores; track devedor.cpf) {
+                <li class="item">devedor.nome</li>
+            } @empty {
+                <tr class="cont-devedor">
+                    <th><p class="cpf">123.456.789-10</p></th>
+                    <th><p><b>Pedro Galvao</b></p></th>
+                    <th><p><span class="real">R$</span> 300</p></th>
+                    <th class="th-nfaturas"><div class="cont-nfaturas">3</div></th>
+                    <th><button (click)="openDetalhes()">
+                        @if (!openFaturas) {
+                            <svg lucideChevronDown></svg>
+                        } @else {
+                            <svg lucideChevronUp></svg>
+                        }
+                    </button></th>
+                </tr>
+                    @if (openFaturas) {
+                    <div class="margin"></div>
+                    <tr class="tr-faturas-inter">
+                        <th>U2SXLFNU51</th>
+                        <th>21/12/2007</th>
+                        <th><span>R$</span>100</th>
+                        <th>CB <svg lucideCopy></svg></th>
+                        <th>PIX <svg lucideCopy></svg></th>
+                        <th>LINK <svg lucideCopy></svg></th>
+                    </tr>
+                }
+
+            }
+        </tbody>
+    </table>
 </div>

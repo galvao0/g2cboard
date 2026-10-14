@@ -7,9 +7,9 @@ import { HttpClient } from '@angular/common/http';
 export class DevedoresService {
     private http = inject(HttpClient);
 
-    private url = "";
+    private url = "http:localhost:3000/devedores";
 
-    getUsers() {
+    getDevedores() {
         return this.http.get(this.url);
     }
 }

@@ -8,7 +8,7 @@ import {
 
 import { FaturasEntity } from '../faturas/faturas.entity.js';
 
-@Entity('devedores')
+@Entity('devedor')
 export class DevedorEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -16,6 +16,8 @@ export class DevedorEntity {
     cpf: string;
     @Column()
     nome: string;
+    @Column({ type: 'decimal' })
+    totalDevedor: number
     @OneToMany(() => FaturasEntity, (fatura) => fatura.devedor)
     faturas: FaturasEntity[];
 }

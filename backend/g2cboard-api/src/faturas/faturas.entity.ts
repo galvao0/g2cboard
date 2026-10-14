@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { DevedorEntity } from "../devedor/devedor.entity.js";
 
 @Entity('faturas')
@@ -17,9 +17,13 @@ export class FaturasEntity {
     codigoBarras: string
     @Column({ nullable: true })
     codigoPix: string
+    @Column()
+    nome: string
 
     @ManyToOne(() => DevedorEntity, (devedor) => devedor.faturas,  { nullable: true })
-    devedor: DevedorEntity[]
     @JoinColumn({ name: 'devedor_id' })
     devedor: DevedorEntity | null;
+
+    @Column()
+    cpf: string
 }

@@ -5,6 +5,7 @@ import Bottleneck from 'bottleneck';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FaturasEntity } from "./faturas.entity.js";
+import { DevedorEntity } from "../devedor/devedor.entity.js";
 
 @Injectable()
 export class FaturasService {
@@ -12,6 +13,8 @@ export class FaturasService {
     private readonly configService: ConfigService,
     @InjectRepository(FaturasEntity)
     private readonly faturasRepository: Repository<FaturasEntity>,
+    @InjectRepository(DevedorEntity)
+    private readonly devedoresRepository: Repository<DevedorEntity>
   ) {}
 
   private limite = new Bottleneck({
@@ -22,7 +25,9 @@ export class FaturasService {
     minTime: 1200,
   });
 
+  private i = 0
   private async buscarFatura(num: string) {
+    this.i++
     while (true) {
       try {
         const fatura = await axios.get<{
@@ -40,14 +45,21 @@ export class FaturasService {
             senhaApi: this.configService.get<string>('API_PASS'),
           },
         });
+        const devedor = await this.devedoresRepository.findOneBy({ cpf: fatura.data.beneficiario.cpf })
+        let idDev = null
+        if (devedor) {
+          idDev = devedor.id
+        }
         console.log({
-            codigo: fatura.data.codigo,
+          i: this.i,
+          codigo: fatura.data.codigo,
           valor: fatura.data.valorCobranca,
           vencimento: fatura.data.dataVencimento,
           linkFatura: fatura.data.linkFatura,
           codigoBarras: fatura.data.linhaDigitavel,
           codigoPix: fatura.data.pixList.brcode,
-          devedor: fatura.data.beneficiario.nome
+          devedor: idDev,
+          nome: fatura.data.beneficiario.nome
         })
         return {
           codigo: fatura.data.codigo,
@@ -56,7 +68,8 @@ export class FaturasService {
           linkFatura: fatura.data.linkFatura,
           codigoBarras: fatura.data.linhaDigitavel,
           codigoPix: fatura.data.pixList.brcode,
-          devedor: fatura.data.beneficiario.nome,
+          devedor: idDev,
+          nome: fatura.data.beneficiario.nome,
           cpf: fatura.data.beneficiario.cpf
         };
       } catch (error) {
@@ -70,7 +83,7 @@ export class FaturasService {
     }
   }
 
-  async getFaturas() {
+  async getFaturasApi() {
     const resp = await axios.get(
       `${this.configService.get<string>('API_URL_BASE')}/procurarPorVencida`,
       {
@@ -81,7 +94,7 @@ export class FaturasService {
         },
       },
     );
-    const numFaturas = resp.data;
+    const numFaturas = resp.data.slice(0, 4)
     console.log(numFaturas)
 
     const respFaturas = await Promise.all(
@@ -98,7 +111,7 @@ export class FaturasService {
     }
 
     async asyncDbFaturas() {
-      const faturasApi = await this.getFaturas();
+      const faturasApi = await this.getFaturasApi();
       const faturasDb = await this.faturasRepository.find();
 
       for (const faturaDb of faturasDb) {
@@ -121,6 +134,10 @@ export class FaturasService {
           await this.faturasRepository.save(novaFatura);
         }
       }
+    }
+
+    async getFaturasDb () {
+      return await this.faturasRepository.find()
     }
 
     async deleteAll() {
