@@ -98,22 +98,29 @@ export class FaturasService {
     }
 
     async asyncDbFaturas() {
-        try {
-            const faturasResp = await this.getFaturas()
-            const faturasDb = await this.faturasRepository.find()
+      const faturasApi = await this.getFaturas();
+      const faturasDb = await this.faturasRepository.find();
 
-            for (const fatura of faturasResp) {
-                const faturaExiste = await this.faturasRepository.findOneBy({ codigo: fatura.codigo })
-                console.log(faturaExiste)
+      for (const faturaDb of faturasDb) {
+        const existeNaApi = faturasApi.some(
+          (faturaApi) => faturaApi.codigo === faturaDb.codigo,
+        );
 
-                if (!faturaExiste) {
-                    const faturaDb = this.faturasRepository.create(fatura)
-                    await this.faturasRepository.save(faturaDb)
-                }
-            }
-        } catch (error) {
-            return error
+        if (!existeNaApi) {
+          await this.faturasRepository.remove(faturaDb);
         }
+      }
+
+      for (const faturaApi of faturasApi) {
+        const existeNoDb = faturasDb.some(
+          (faturaDb) => faturaDb.codigo === faturaApi.codigo,
+        );
+
+        if (!existeNoDb) {
+          const novaFatura = this.faturasRepository.create(faturaApi);
+          await this.faturasRepository.save(novaFatura);
+        }
+      }
     }
 
     async deleteAll() {

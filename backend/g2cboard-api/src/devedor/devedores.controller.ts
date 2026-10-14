@@ -10,4 +10,15 @@ export class DevedoresController {
     @Get('/sincronizar')
     sincronizarDevedores() {
     }
+    async findAll() {
+        await this.faturasService.asyncDbFaturas();
+        await this.sincronizarDevedores();
+
+        return this.devedorRepository.find({
+            relations: {
+                faturas: true,
+            },
+        });
+                              
+    }
 }
