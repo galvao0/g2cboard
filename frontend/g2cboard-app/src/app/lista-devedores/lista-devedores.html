@@ -1,45 +1,188 @@
-<div class="content">
-    <table>
-        <thead>
-            <tr>
-                <th>CPF</th>
-                <th>NOME</th>
-                <th>TOTAL DEVEDOR</th>
-                <th>N° FATURAS</th>
-                <th class="th-chevron"></th>
-            </tr>
-        </thead>
-        <div class="margin"></div>
-        <tbody>
-            @for (devedor of devedores; track devedor.cpf) {
-                <li class="item">devedor.nome</li>
-            } @empty {
-                <tr class="cont-devedor">
-                    <th><p class="cpf">123.456.789-10</p></th>
-                    <th><p><b>Pedro Galvao</b></p></th>
-                    <th><p><span class="real">R$</span> 300</p></th>
-                    <th class="th-nfaturas"><div class="cont-nfaturas">3</div></th>
-                    <th><button (click)="openDetalhes()">
-                        @if (!openFaturas) {
-                            <svg lucideChevronDown></svg>
-                        } @else {
-                            <svg lucideChevronUp></svg>
-                        }
-                    </button></th>
-                </tr>
-                    @if (openFaturas) {
-                    <div class="margin"></div>
-                    <tr class="tr-faturas-inter">
-                        <th>U2SXLFNU51</th>
-                        <th>21/12/2007</th>
-                        <th><span>R$</span>100</th>
-                        <th>CB <svg lucideCopy></svg></th>
-                        <th>PIX <svg lucideCopy></svg></th>
-                        <th>LINK <svg lucideCopy></svg></th>
-                    </tr>
-                }
+<div class="board">
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-icon">
+        <svg lucideUsers></svg>
+      </div>
 
-            }
-        </tbody>
+      <div>
+        <span>Total devedores</span>
+        <strong>1.284</strong>
+      </div>
+
+      <small>+12,4%</small>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <svg lucideCircleDollarSign></svg>
+      </div>
+
+      <div>
+        <span>Total devedor</span>
+        <strong>R$ 84.520</strong>
+      </div>
+
+      <small>+8,2%</small>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <svg lucideWallet></svg>
+      </div>
+
+      <div>
+        <span>Total recebido</span>
+        <strong>R$ 61.430</strong>
+      </div>
+
+      <small>+15,7%</small>
+    </div>
+  </div>
+
+  <div class="table-box">
+    <table>
+      <thead>
+        <tr>
+          <th>CLIENTE</th>
+          <th>CPF</th>
+          <th>VALOR DEVIDO</th>
+          <th>FATURAS</th>
+          <th>ÚLTIMO VENCIMENTO</th>
+          <th>STATUS</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr class="devedor-row">
+          <td>
+            <div class="cliente">
+              <div>
+                <strong>Pedro Galvao</strong>
+              </div>
+            </div>
+          </td>
+
+          <td>123.456.789-10</td>
+
+          <td>
+            <strong class="valor">R$ 300,00</strong>
+          </td>
+
+          <td>
+            <span class="faturas">3</span>
+          </td>
+
+          <td>21/12/2026</td>
+
+          <td>
+            <span class="status atrasado">Atrasado</span>
+          </td>
+
+          <td>
+            <button class="btn-more" type="button" (click)="openDetalhes()">
+              @if (!openFaturas) {
+                <svg lucideChevronDown></svg>
+              } @else {
+                <svg lucideChevronUp></svg>
+              }
+            </button>
+          </td>
+        </tr>
+
+        @if (openFaturas) {
+          <tr class="faturas-row">
+            <td colspan="7">
+              <div class="faturas-container">
+                <div class="faturas-header">
+                  <span>CÓDIGO</span>
+                  <span>VENCIMENTO</span>
+                  <span>VALOR</span>
+                  <span>BOLETO</span>
+                  <span>PIX</span>
+                  <span>LINK</span>
+                </div>
+
+                <div class="fatura">
+                  <span>U2SXLFNU51</span>
+                  <span>21/12/2026</span>
+
+                  <strong>
+                    <small>R$</small>
+                    100,00
+                  </strong>
+
+                  <button type="button">
+                    CB
+                    <svg lucideCopy></svg>
+                  </button>
+
+                  <button type="button">
+                    PIX
+                    <svg lucideCopy></svg>
+                  </button>
+
+                  <button type="button">
+                    LINK
+                    <svg lucideCopy></svg>
+                  </button>
+                </div>
+
+                <div class="fatura">
+                  <span>J7K29DLA82</span>
+                  <span>05/01/2027</span>
+
+                  <strong>
+                    <small>R$</small>
+                    100,00
+                  </strong>
+
+                  <button type="button">
+                    CB
+                    <svg lucideCopy></svg>
+                  </button>
+
+                  <button type="button">
+                    PIX
+                    <svg lucideCopy></svg>
+                  </button>
+
+                  <button type="button">
+                    LINK
+                    <svg lucideCopy></svg>
+                  </button>
+                </div>
+
+                <div class="fatura">
+                  <span>PL92KX81A4</span>
+                  <span>05/02/2027</span>
+
+                  <strong>
+                    <small>R$</small>
+                    100,00
+                  </strong>
+
+                  <button type="button">
+                    CB
+                    <svg lucideCopy></svg>
+                  </button>
+
+                  <button type="button">
+                    PIX
+                    <svg lucideCopy></svg>
+                  </button>
+
+                  <button type="button">
+                    LINK
+                    <svg lucideCopy></svg>
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
     </table>
+  </div>
 </div>

@@ -1,338 +1,420 @@
-.content {
-    padding: 10px;
-}
 .board {
-      padding: 24px;
-        box-sizing: border-box;
-        }
-
-        .board-header {
-          display: flex;
-            align-items: center;
-              justify-content: space-between;
-                margin-bottom: 24px;
-
-                  h1 {
-                      color: var(--text-color);
-                          font-size: 1.5rem;
-                              font-weight: 650;
-                                  margin: 4px 0;
-                                    }
-
-                                      p {
-                                          color: var(--font-color);
-                                              font-size: 0.85rem;
-                                                  margin: 0;
-                                                    }
-                                                    }
-
-                                                    .eyebrow {
-                                                      color: var(--accent-color);
-                                                        font-size: 0.65rem;
-                                                          font-weight: 700;
-                                                            letter-spacing: 1.5px;
-                                                            }
-
-
-                                                            .period {
-                                                              display: flex;
-                                                                align-items: center;
-                                                                  gap: 6px;
-
-                                                                    padding: 9px 12px;
-
-                                                                      background: var(--sidebar-bg);
-                                                                        border: 1px solid var(--border-color);
-                                                                          border-radius: 8px;
-
-                                                                            color: var(--font-color);
-                                                                              font-size: 0.78rem;
-
-                                                                                cursor: pointer;
-
-                                                                                  mat-icon {
-                                                                                      font-size: 17px;
-                                                                                          width: 17px;
-                                                                                              height: 17px;
-                                                                                                }
-
-                                                                                                  &:hover {
-                                                                                                      border-color: #414650;
-                                                                                                          color: var(--text-color);
-                                                                                                            }
-                                                                                                            }
-
-
-                                                                                                            .cards {
-                                                                                                              display: grid;
-                                                                                                                grid-template-columns: repeat(4, 1fr);
-                                                                                                                  gap: 14px;
-                                                                                                                  }
-
-
-                                                                                                                  .card {
-                                                                                                                    background: var(--sidebar-bg);
-                                                                                                                      border: 1px solid var(--border-color);
-                                                                                                                        border-radius: 10px;
-                                                                                                                          padding: 18px;
-
-                                                                                                                            .card-top {
-                                                                                                                                display: flex;
-                                                                                                                                    align-items: center;
-                                                                                                                                        justify-content: space-between;
-
-                                                                                                                                            color: var(--font-color);
-                                                                                                                                                font-size: 0.75rem;
-
-                                                                                                                                                    mat-icon {
-                                                                                                                                                          color: #858b98;
-                                                                                                                                                                font-size: 20px;
-                                                                                                                                                                    }
-                                                                                                                                                                      }
-
-                                                                                                                                                                        strong {
-                                                                                                                                                                            display: block;
-                                                                                                                                                                                margin-top: 18px;
-
-                                                                                                                                                                                    color: var(--text-color);
-                                                                                                                                                                                        font-size: 1.45rem;
-                                                                                                                                                                                            font-weight: 650;
-                                                                                                                                                                                              }
-                                                                                                                                                                                              }
-
-
-                                                                                                                                                                                              .variation {
-                                                                                                                                                                                                display: flex;
-                                                                                                                                                                                                  align-items: center;
-                                                                                                                                                                                                    gap: 4px;
-
-                                                                                                                                                                                                      margin-top: 10px;
-
-                                                                                                                                                                                                        font-size: 0.7rem;
-                                                                                                                                                                                                          color: var(--accent-color);
-
-                                                                                                                                                                                                            mat-icon {
-                                                                                                                                                                                                                width: 15px;
-                                                                                                                                                                                                                    height: 15px;
-                                                                                                                                                                                                                        font-size: 15px;
-                                                                                                                                                                                                                          }
-
-                                                                                                                                                                                                                            span {
-                                                                                                                                                                                                                                color: #717887;
-                                                                                                                                                                                                                                    margin-left: 3px;
-                                                                                                                                                                                                                                      }
-                                                                                                                                                                                                                                      }
-
-
-                                                                                                                                                                                                                                      .main-grid {
-                                                                                                                                                                                                                                        display: grid;
-                                                                                                                                                                                                                                          grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
-                                                                                                                                                                                                                                            gap: 14px;
-                                                                                                                                                                                                                                              margin-top: 14px;
-                                                                                                                                                                                                                                              }
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+
+  h1 {
+    color: var(--text-color);
+    font-size: 1.5rem;
+    font-weight: 650;
+    margin: 4px 0;
+  }
+
+  p {
+    color: var(--font-color);
+    font-size: 0.85rem;
+    margin: 0;
+  }
+}
+
+.eyebrow {
+  color: var(--accent-color);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.period {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 9px 12px;
+
+  background: var(--sidebar-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+
+  color: var(--font-color);
+  font-size: 0.78rem;
+
+  cursor: pointer;
+
+  svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  &:hover {
+    border-color: #414650;
+    color: var(--text-color);
+  }
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.card {
+  background: var(--sidebar-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 18px;
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    color: var(--font-color);
+    font-size: 0.75rem;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      color: #858b98;
+    }
+  }
+
+  strong {
+    display: block;
+    margin-top: 18px;
+
+    color: var(--text-color);
+    font-size: 1.45rem;
+    font-weight: 650;
+  }
+}
+
+.variation {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  margin-top: 10px;
+
+  font-size: 0.7rem;
+  color: var(--accent-color);
+
+  svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  span {
+    color: #717887;
+    margin-left: 3px;
+  }
+}
+
+.main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.chart-card,
+.summary-card,
+.recent-card {
+  background: var(--sidebar-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  > div span {
+    color: #717887;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+  }
+
+  h2 {
+    margin: 4px 0 0;
+
+    color: var(--text-color);
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+}
+
+.chart {
+  height: 300px;
+  margin-top: 20px;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-top: 25px;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    span {
+      color: var(--font-color);
+      font-size: 0.75rem;
+    }
+
+    strong {
+      color: var(--text-color);
+      font-size: 0.9rem;
+    }
+  }
+
+  .percentage {
+    color: var(--accent-color);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+}
+
+.progress {
+  width: 100%;
+  height: 5px;
+
+  margin-top: 10px;
+
+  background: #292d34;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-value {
+  width: 72.7%;
+  height: 100%;
+  background: var(--accent-color);
+}
+
+.progress-value.aberto {
+  width: 27.3%;
+  background: #717887;
+}
+
+.recent-card {
+  margin-top: 14px;
+}
+
+.see-all {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  background: none;
+  border: none;
+
+  color: var(--font-color);
+  font-size: 0.75rem;
+
+  cursor: pointer;
+
+  svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  &:hover {
+    color: var(--accent-color);
+  }
+}
+
+.recent-card > table {
+  width: 100%;
+  margin-top: 20px;
 
-
-                                                                                                                                                                                                                                              .chart-card,
-                                                                                                                                                                                                                                              .summary-card,
-                                                                                                                                                                                                                                              .recent-card {
-                                                                                                                                                                                                                                                background: var(--sidebar-bg);
-                                                                                                                                                                                                                                                  border: 1px solid var(--border-color);
-                                                                                                                                                                                                                                                    border-radius: 10px;
-                                                                                                                                                                                                                                                      padding: 20px;
-                                                                                                                                                                                                                                                      }
+  border-collapse: collapse;
+}
 
+.recent-card > table > thead th {
+  padding: 13px 8px;
 
-                                                                                                                                                                                                                                                      .section-header {
-                                                                                                                                                                                                                                                        display: flex;
-                                                                                                                                                                                                                                                          align-items: center;
-                                                                                                                                                                                                                                                            justify-content: space-between;
+  color: #717887;
 
-                                                                                                                                                                                                                                                              > div span {
-                                                                                                                                                                                                                                                                  color: #717887;
-                                                                                                                                                                                                                                                                      font-size: 0.62rem;
-                                                                                                                                                                                                                                                                          font-weight: 700;
-                                                                                                                                                                                                                                                                              letter-spacing: 1.3px;
-                                                                                                                                                                                                                                                                                }
+  font-size: 0.65rem;
+  font-weight: 600;
 
-                                                                                                                                                                                                                                                                                  h2 {
-                                                                                                                                                                                                                                                                                      margin: 4px 0 0;
+  text-align: left;
+}
 
-                                                                                                                                                                                                                                                                                          color: var(--text-color);
-                                                                                                                                                                                                                                                                                              font-size: 0.95rem;
-                                                                                                                                                                                                                                                                                                  font-weight: 600;
-                                                                                                                                                                                                                                                                                                    }
-                                                                                                                                                                                                                                                                                                    }
+.recent-card > table > tbody > tr:first-child > td {
+  border-top: 1px solid var(--border-color);
+}
 
+.recent-card > table > tbody > tr > td {
+  padding: 15px 8px;
 
-                                                                                                                                                                                                                                                                                                    .chart {
-                                                                                                                                                                                                                                                                                                      height: 300px;
-                                                                                                                                                                                                                                                                                                        margin-top: 20px;
-                                                                                                                                                                                                                                                                                                        }
+  color: var(--font-color);
+  font-size: 0.75rem;
+}
 
+.recent-card > table > tbody > tr:hover > td {
+  background: rgba(255, 255, 255, 0.015);
+}
 
-                                                                                                                                                                                                                                                                                                        .summary-item {
-                                                                                                                                                                                                                                                                                                          display: flex;
-                                                                                                                                                                                                                                                                                                            align-items: center;
-                                                                                                                                                                                                                                                                                                              justify-content: space-between;
+.valor {
+  color: var(--text-color);
+}
 
-                                                                                                                                                                                                                                                                                                                margin-top: 25px;
+.status {
+  display: inline-flex;
 
-                                                                                                                                                                                                                                                                                                                  div {
-                                                                                                                                                                                                                                                                                                                      display: flex;
-                                                                                                                                                                                                                                                                                                                          flex-direction: column;
-                                                                                                                                                                                                                                                                                                                              gap: 5px;
+  width: fit-content;
 
-                                                                                                                                                                                                                                                                                                                                  span {
-                                                                                                                                                                                                                                                                                                                                        color: var(--font-color);
-                                                                                                                                                                                                                                                                                                                                              font-size: 0.75rem;
-                                                                                                                                                                                                                                                                                                                                                  }
+  padding: 4px 8px;
 
-                                                                                                                                                                                                                                                                                                                                                      strong {
-                                                                                                                                                                                                                                                                                                                                                            color: var(--text-color);
-                                                                                                                                                                                                                                                                                                                                                                  font-size: 0.9rem;
-                                                                                                                                                                                                                                                                                                                                                                      }
-                                                                                                                                                                                                                                                                                                                                                                        }
+  border-radius: 5px;
 
-                                                                                                                                                                                                                                                                                                                                                                          .percentage {
-                                                                                                                                                                                                                                                                                                                                                                              color: var(--accent-color);
-                                                                                                                                                                                                                                                                                                                                                                                  font-size: 0.8rem;
-                                                                                                                                                                                                                                                                                                                                                                                      font-weight: 600;
-                                                                                                                                                                                                                                                                                                                                                                                        }
-                                                                                                                                                                                                                                                                                                                                                                                        }
+  font-size: 0.65rem;
+  font-weight: 600;
+}
 
+.received {
+  color: var(--accent-color);
+  background: rgba(188, 242, 39, 0.08);
+}
 
-                                                                                                                                                                                                                                                                                                                                                                                        .progress {
-                                                                                                                                                                                                                                                                                                                                                                                          width: 100%;
-                                                                                                                                                                                                                                                                                                                                                                                            height: 5px;
+.pending {
+  color: #d9b85c;
+  background: rgba(217, 184, 92, 0.08);
+}
 
-                                                                                                                                                                                                                                                                                                                                                                                              margin-top: 10px;
+.btn-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-                                                                                                                                                                                                                                                                                                                                                                                                background: #292d34;
-                                                                                                                                                                                                                                                                                                                                                                                                  border-radius: 10px;
-                                                                                                                                                                                                                                                                                                                                                                                                    overflow: hidden;
-                                                                                                                                                                                                                                                                                                                                                                                                    }
+  width: 100%;
 
-                                                                                                                                                                                                                                                                                                                                                                                                    .progress-value {
-                                                                                                                                                                                                                                                                                                                                                                                                      width: 72.7%;
-                                                                                                                                                                                                                                                                                                                                                                                                        height: 100%;
-                                                                                                                                                                                                                                                                                                                                                                                                          background: var(--accent-color);
-                                                                                                                                                                                                                                                                                                                                                                                                          }
+  border: none;
+  background: transparent;
 
+  color: #717887;
 
-                                                                                                                                                                                                                                                                                                                                                                                                          .recent-card {
-                                                                                                                                                                                                                                                                                                                                                                                                            margin-top: 14px;
-                                                                                                                                                                                                                                                                                                                                                                                                            }
+  cursor: pointer;
 
+  svg {
+    width: 17px;
+    height: 17px;
+  }
 
-                                                                                                                                                                                                                                                                                                                                                                                                            .see-all {
-                                                                                                                                                                                                                                                                                                                                                                                                              display: flex;
-                                                                                                                                                                                                                                                                                                                                                                                                                align-items: center;
-                                                                                                                                                                                                                                                                                                                                                                                                                  gap: 5px;
+  &:hover {
+    color: var(--accent-color);
+  }
+}
 
-                                                                                                                                                                                                                                                                                                                                                                                                                    background: none;
-                                                                                                                                                                                                                                                                                                                                                                                                                      border: none;
+.faturas-row > td {
+  padding: 0 !important;
+  border: none !important;
+}
 
-                                                                                                                                                                                                                                                                                                                                                                                                                        color: var(--font-color);
-                                                                                                                                                                                                                                                                                                                                                                                                                          font-size: 0.75rem;
+.faturas-table {
+  width: 100%;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                            cursor: pointer;
+  border-collapse: collapse;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                              &:hover {
-                                                                                                                                                                                                                                                                                                                                                                                                                                  color: var(--accent-color);
-                                                                                                                                                                                                                                                                                                                                                                                                                                    }
+  background: #15171b;
+  border-top: 1px solid var(--border-color);
+}
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                      mat-icon {
-                                                                                                                                                                                                                                                                                                                                                                                                                                          width: 15px;
-                                                                                                                                                                                                                                                                                                                                                                                                                                              height: 15px;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                  font-size: 15px;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
+.faturas-table th {
+  padding: 10px 8px;
 
+  color: #626875;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    .table {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                      margin-top: 20px;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                      }
+  font-size: 0.6rem;
+  font-weight: 600;
 
+  text-align: left;
+}
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                      .table-header,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                      .table-row {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        display: grid;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                          grid-template-columns: 2fr 1.3fr 1.2fr 1fr 1fr;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                            align-items: center;
+.faturas-table td {
+  padding: 12px 8px;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                              padding: 13px 8px;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                              }
+  border-top: 1px solid #22252b;
 
+  color: var(--font-color);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                              .table-header {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                color: #717887;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                  font-size: 0.65rem;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                    font-weight: 600;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
+  font-size: 0.7rem;
+}
 
+.faturas-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                    .table-row {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                      border-top: 1px solid var(--border-color);
+.copy-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        color: var(--text-color);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                          font-size: 0.75rem;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                          }
+  padding: 0;
 
+  border: none;
+  background: transparent;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                          .status {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            width: fit-content;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                              padding: 4px 8px;
+  color: var(--font-color);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                border-radius: 5px;
+  font-size: 0.68rem;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  font-size: 0.65rem;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    font-weight: 600;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
+  cursor: pointer;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    .received {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      color: var(--accent-color);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        background: rgba(188, 242, 39, 0.08);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }
+  svg {
+    width: 12px;
+    height: 12px;
+  }
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        .pending {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          color: #d9b85c;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            background: rgba(217, 184, 92, 0.08);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }
+  &:hover {
+    color: var(--accent-color);
+  }
+}
 
+@media (max-width: 1100px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @media (max-width: 1100px) {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              .cards {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  grid-template-columns: repeat(2, 1fr);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      .main-grid {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          grid-template-columns: 1fr;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }
+@media (max-width: 650px) {
+  .board {
+    padding: 16px;
+  }
 
+  .board-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 15px;
+  }
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @media (max-width: 650px) {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              .board {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  padding: 16px;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
+  .cards {
+    grid-template-columns: 1fr;
+  }
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      .board-header {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          align-items: flex-start;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              flex-direction: column;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  gap: 15px;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
+  .recent-card {
+    overflow-x: auto;
+  }
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      .cards {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          grid-template-columns: 1fr;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }
-
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              .table {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  overflow-x: auto;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
-
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      .table-header,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        .table-row {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            min-width: 650px;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              }
+  .recent-card > table {
+    min-width: 700px;
+  }
 }
