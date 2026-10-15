@@ -1,4 +1,4 @@
-<div class="board">
+<div class="content">
   <div class="stats">
     <div class="stat-card">
       <div class="stat-icon">
@@ -7,36 +7,36 @@
 
       <div>
         <span>Total devedores</span>
-        <strong>1.284</strong>
+        <strong>1</strong>
       </div>
 
-      <small>+12,4%</small>
+      <small>+1,4%</small>
     </div>
 
     <div class="stat-card">
       <div class="stat-icon">
-        <svg lucideCircleDollarSign></svg>
+        <svg lucideTrendingDown></svg>
       </div>
 
       <div>
         <span>Total devedor</span>
-        <strong>R$ 84.520</strong>
+        <strong>R$ 300</strong>
       </div>
 
-      <small>+8,2%</small>
+      <small>+1,2%</small>
     </div>
 
     <div class="stat-card">
       <div class="stat-icon">
-        <svg lucideWallet></svg>
+        <svg lucideTrendingUp></svg>
       </div>
 
       <div>
         <span>Total recebido</span>
-        <strong>R$ 61.430</strong>
+        <strong>R$ 1</strong>
       </div>
 
-      <small>+15,7%</small>
+      <small>+0,7%</small>
     </div>
   </div>
 
@@ -74,14 +74,14 @@
             <span class="faturas">3</span>
           </td>
 
-          <td>21/12/2026</td>
+          <td>21/12/2007</td>
 
           <td>
             <span class="status atrasado">Atrasado</span>
           </td>
 
           <td>
-            <button class="btn-more" type="button" (click)="openDetalhes()">
+            <button class="btn-chevron" type="button" (click)="openDetalhes()">
               @if (!openFaturas) {
                 <svg lucideChevronDown></svg>
               } @else {
@@ -94,7 +94,7 @@
         @if (openFaturas) {
           <tr class="faturas-row">
             <td colspan="7">
-              <div class="faturas-container">
+              <div class="faturas-cont">
                 <div class="faturas-header">
                   <span>CÓDIGO</span>
                   <span>VENCIMENTO</span>
@@ -106,7 +106,7 @@
 
                 <div class="fatura">
                   <span>U2SXLFNU51</span>
-                  <span>21/12/2026</span>
+                  <span>21/12/2007</span>
 
                   <strong>
                     <small>R$</small>
@@ -128,58 +128,7 @@
                     <svg lucideCopy></svg>
                   </button>
                 </div>
-
-                <div class="fatura">
-                  <span>J7K29DLA82</span>
-                  <span>05/01/2027</span>
-
-                  <strong>
-                    <small>R$</small>
-                    100,00
-                  </strong>
-
-                  <button type="button">
-                    CB
-                    <svg lucideCopy></svg>
-                  </button>
-
-                  <button type="button">
-                    PIX
-                    <svg lucideCopy></svg>
-                  </button>
-
-                  <button type="button">
-                    LINK
-                    <svg lucideCopy></svg>
-                  </button>
-                </div>
-
-                <div class="fatura">
-                  <span>PL92KX81A4</span>
-                  <span>05/02/2027</span>
-
-                  <strong>
-                    <small>R$</small>
-                    100,00
-                  </strong>
-
-                  <button type="button">
-                    CB
-                    <svg lucideCopy></svg>
-                  </button>
-
-                  <button type="button">
-                    PIX
-                    <svg lucideCopy></svg>
-                  </button>
-
-                  <button type="button">
-                    LINK
-                    <svg lucideCopy></svg>
-                  </button>
-                </div>
-              </div>
-            </td>
+              </div>  
           </tr>
         }
       </tbody>

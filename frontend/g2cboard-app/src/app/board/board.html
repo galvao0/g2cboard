@@ -3,14 +3,14 @@
     <div class="card">
       <div class="card-top">
         <span>Total de devedores</span>
-        <svg lucideArrowDownFromLine></svg>
+        <svg lucideUsers></svg>
       </div>
 
-      <strong>1.284</strong>
+      <strong>1</strong>
 
-      <div class="variation positive">
-        <svg lucideArrowDownFromLine></svg>
-        12,4%
+      <div class="vari positivo">
+        <svg lucideTrendingUp></svg>
+        1,4%
         <span>vs. mês anterior</span>
       </div>
     </div>
@@ -18,14 +18,14 @@
     <div class="card">
       <div class="card-top">
         <span>Total devedor</span>
-        <svg lucideArrowDownFromLine></svg>
+        <svg lucideTrendingDown></svg>
       </div>
 
-      <strong>R$ 84.520,00</strong>
+      <strong>R$ 300</strong>
 
-      <div class="variation positive">
-        <svg lucideArrowDownFromLine></svg>
-        8,2%
+      <div class="vari positivo">
+        <svg lucideTrendingDown></svg>
+        1,2%
         <span>vs. mês anterior</span>
       </div>
     </div>
@@ -33,14 +33,14 @@
     <div class="card">
       <div class="card-top">
         <span>Total recebido</span>
-        <svg lucideArrowDownFromLine></svg>
+        <svg lucideTrendingUp></svg>
       </div>
 
-      <strong>R$ 61.430,00</strong>
+      <strong>R$ 0</strong>
 
-      <div class="variation positive">
-        <svg lucideArrowDownFromLine></svg>
-        15,7%
+      <div class="vari positivo">
+        <svg lucideTrendingUp></svg>
+        0,7%
         <span>vs. mês anterior</span>
       </div>
     </div>
@@ -48,31 +48,26 @@
     <div class="card">
       <div class="card-top">
         <span>Faturamento</span>
-        <svg lucideArrowDownFromLine></svg>
+        <svg lucideBanknoteArrowDown></svg>
       </div>
 
-      <strong>R$ 61.430,00</strong>
+      <strong>R$ 0</strong>
 
-      <div class="variation positive">
-        <svg lucideArrowDownFromLine></svg>
-        15,7%
+      <div class="vari positivo">
+        <svg lucideTrendingUp></svg>
+        0,7%
         <span>vs. mês anterior</span>
       </div>
     </div>
   </div>
 
-  <div class="main-grid">
-    <div class="chart-card">
-      <div class="section-header">
+  <div class="main-cont">
+    <div class="cont-chart">
+      <div class="main-header">
         <div>
           <span>FATURAMENTO</span>
           <h2>Recebimentos</h2>
         </div>
-
-        <button class="ultimaat">
-          06:00
-          <svg lucideArrowDownFromLine></svg>
-        </button>
       </div>
 
       <div class="grafico"></div>
@@ -81,18 +76,17 @@
     <div class="cont-estatistica">
       <div class="cont-estatistica-header">
         <div>
-          <span>RESUMO</span>
-          <h2>Situação</h2>
+          <h2>RESUMO</h2>
         </div>
       </div>
 
       <div class="item-estatistica">
         <div>
           <span>Recebido</span>
-          <strong>R$ 61.430,00</strong>
+          <strong>R$ 0</strong>
         </div>
 
-        <span class="percentagem">72,7%</span>
+        <span class="percentagem">0,0%</span>
       </div>
 
       <div class="progress">
@@ -102,10 +96,10 @@
       <div class="item-estatistica">
         <div>
           <span>Em aberto</span>
-          <strong>R$ 23.090,00</strong>
+          <strong>R$ 300</strong>
         </div>
 
-        <span class="percentagem">27,3%</span>
+        <span class="percentagem">100%</span>
       </div>
 
       <div class="progress">
@@ -117,13 +111,12 @@
   <div class="cont-ul-cobranca">
     <div class="cont-ul-cobranca-header">
       <div>
-        <span>ATIVIDADE</span>
         <h2>Últimas cobranças</h2>
       </div>
 
-      <button class="exb">
+      <button class="exb" (click)="open()">
         Ver todas
-        <svg lucideArrowDownFromLine></svg>
+        <svg lucideChevronDown></svg>
       </button>
     </div>
 
@@ -152,7 +145,7 @@
           </td>
 
           <td>
-            <span class="status pending">Pendente</span>
+            <span class="status vencida">Vencida</span>
           </td>
 
           <td>13/10/2026</td>

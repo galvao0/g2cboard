@@ -1,12 +1,12 @@
 import { Component, OnInit, inject } from "@angular/core";
 import { DevedoresService } from "../service/devedores/devedores-service";
-import { LucideAArrowDown, LucideChevronDown, LucideChevronUp, LucideCopy } from "@lucide/angular";
+import { LucideAArrowDown, LucideChevronDown, LucideChevronUp, LucideCopy, LucideTrendingDown, LucideTrendingUp, LucideUsers } from "@lucide/angular";
 
 @Component({
     selector: 'app-listadevedores',
     templateUrl: './lista-devedores.html',
     styleUrl: './lista-devedores.scss',
-    imports: [LucideChevronDown, LucideChevronUp, LucideCopy]
+    imports: [LucideChevronDown, LucideChevronUp, LucideCopy, LucideUsers, LucideTrendingDown, LucideTrendingUp]
 })
 export class ListaDevedores {
     private devedoresService = inject(DevedoresService);

@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { DevedorEntity } from "../devedor/devedor.entity.js";
+import { StatusFatura } from "./status-fatura.js";
 
 @Entity('faturas')
 export class FaturasEntity {
@@ -19,6 +20,8 @@ export class FaturasEntity {
     codigoPix: string
     @Column()
     nome: string
+    @Column({ default: StatusFatura.VENCIDA })
+    status: StatusFatura
 
     @ManyToOne(() => DevedorEntity, (devedor) => devedor.faturas,  { nullable: true })
     @JoinColumn({ name: 'devedor_id' })

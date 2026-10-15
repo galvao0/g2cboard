@@ -44,11 +44,17 @@ export class DevedoresService {
           faturas: faturasDevedor
         });
 
-        
+        console.log({
+          cpf: cpf,
+          nome: faturasDevedor[0].nome,
+          totalDevedor: totalDevedor,
+          faturas: faturasDevedor
+        })
 
         await this.devedorRepository.save(dev);
       } else {
         devedorExiste.totalDevedor = totalDevedor;
+        console.log(devedorExiste)
         await this.devedorRepository.save(devedorExiste);
       }
     }

@@ -3,14 +3,7 @@
   box-sizing: border-box;
 }
 
-.eyebrow {
-  color: var(--accent-color);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-}
-
-.period {
+.ultimaat {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -74,7 +67,7 @@
   }
 }
 
-.variation {
+.vari {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -95,15 +88,15 @@
   }
 }
 
-.main-grid {
+.main-cont {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
   gap: 14px;
   margin-top: 14px;
 }
 
-.chart-card,
-.summary-card,
+.cont-chart,
+.cont-estatistica,
 .recent-card {
   background: var(--sidebar-bg);
   border: 1px solid var(--border-color);
@@ -111,7 +104,7 @@
   padding: 20px;
 }
 
-.section-header {
+.main-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -137,7 +130,7 @@
   margin-top: 20px;
 }
 
-.summary-item {
+.item-estatistica {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -160,7 +153,7 @@
     }
   }
 
-  .percentage {
+  .percentagem {
     color: var(--accent-color);
     font-size: 0.8rem;
     font-weight: 600;
@@ -178,22 +171,22 @@
   overflow: hidden;
 }
 
-.progress-value {
+.progress-inter {
   width: 72.7%;
   height: 100%;
   background: var(--accent-color);
 }
 
-.progress-value.aberto {
+.progress-inter.aberto {
   width: 27.3%;
   background: #717887;
 }
 
-.recent-card {
+.cont-ul-cobranca {
   margin-top: 14px;
 }
 
-.see-all {
+.exb {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -216,14 +209,14 @@
   }
 }
 
-.recent-card > table {
+.cont-ul-cobranca > table {
   width: 100%;
   margin-top: 20px;
 
   border-collapse: collapse;
 }
 
-.recent-card > table > thead th {
+.cont-ul-cobranca > table > thead th {
   padding: 13px 8px;
 
   color: #717887;
@@ -234,19 +227,24 @@
   text-align: left;
 }
 
-.recent-card > table > tbody > tr:first-child > td {
+.cont-ul-cobranca > table > tbody > tr:first-child > td {
   border-top: 1px solid var(--border-color);
 }
 
-.recent-card > table > tbody > tr > td {
+.cont-ul-cobranca > table > tbody > tr > td {
   padding: 15px 8px;
 
   color: var(--font-color);
   font-size: 0.75rem;
 }
 
-.recent-card > table > tbody > tr:hover > td {
+.cont-ul-coobranca > table > tbody > tr:hover > td {
   background: rgba(255, 255, 255, 0.015);
+}
+
+.cont-ul-cobranca-header {
+  display: flex;
+  justify-content: space-between;
 }
 
 .valor {
@@ -271,12 +269,12 @@
   background: rgba(188, 242, 39, 0.08);
 }
 
-.pending {
-  color: #d9b85c;
+.vencida {
+  color: #d96b5c;
   background: rgba(217, 184, 92, 0.08);
 }
 
-.btn-more {
+.btn-chevron {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -339,7 +337,7 @@
   background: rgba(255, 255, 255, 0.02);
 }
 
-.copy-button {
+.btn-copy {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -370,31 +368,25 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .main-grid {
+  .main-cot {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 650px) {
-  .board {
+  .content {
     padding: 16px;
-  }
-
-  .board-header {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 15px;
   }
 
   .cards {
     grid-template-columns: 1fr;
   }
 
-  .recent-card {
+  .cont-ul-cobranca {
     overflow-x: auto;
   }
 
-  .recent-card > table {
+  .cont-ul-cobranca > table {
     min-width: 700px;
   }
 }

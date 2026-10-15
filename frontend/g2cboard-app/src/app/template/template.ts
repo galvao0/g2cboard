@@ -3,7 +3,7 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { MatIcon } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatDivider } from '@angular/material/divider';
-import { LucideLayoutDashboard, LucideRefreshCcw } from '@lucide/angular';
+import { LucideLayoutDashboard, LucideRefreshCcw, LucideUsers } from '@lucide/angular';
 
 @Component({
   selector: 'app-template',
@@ -18,6 +18,7 @@ import { LucideLayoutDashboard, LucideRefreshCcw } from '@lucide/angular';
     MatDivider,
     RouterLink,
     RouterLinkActive,
+    LucideUsers
   ],
 })
 export class Template {

@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FaturasEntity } from "./faturas.entity.js";
 import { DevedorEntity } from "../devedor/devedor.entity.js";
+import { StatusFatura } from "./status-fatura.js";
 
 @Injectable()
 export class FaturasService {
@@ -26,56 +27,65 @@ export class FaturasService {
   });
 
   private i = 0
+  private faturaNo = null
+  private faturaUl: any
   private async buscarFatura(num: string) {
     this.i++
     while (true) {
       try {
-        const fatura = await axios.get<{
-          codigo: string
-          valorCobranca: number;
-          dataVencimento: string
-          linkFatura: string
-          linhaDigitavel: string
-          pixList: { brcode: string }
-          beneficiario: { nome: string, cpf: string }
-        }>(`${this.configService.get<string>('API_URL_BASE')}/${num}?pix=1`, {
-          headers: {
-            accept: 'application/json',
-            token: this.configService.get<string>('API_TOKEN'),
-            senhaApi: this.configService.get<string>('API_PASS'),
-          },
-        });
-        const devedor = await this.devedoresRepository.findOneBy({ cpf: fatura.data.beneficiario.cpf })
-        let idDev = null
-        if (devedor) {
-          idDev = devedor.id
+        console.log('il')
+        if (!this.faturaNo) {
+          const fatura = await axios.get<{
+            codigo: string
+            valorCobranca: number;
+            dataVencimento: string
+            linkFatura: string
+            linhaDigitavel: string
+            pixList: { brcode: string }
+            beneficiario: { nome: string, cpf: string }
+          }>(`${this.configService.get<string>('API_URL_BASE')}/${num}?pix=1`, {
+            headers: {
+              accept: 'application/json',
+              token: this.configService.get<string>('API_TOKEN'),
+              senhaApi: this.configService.get<string>('API_PASS'),
+            },
+          });
+          const devedor = await this.devedoresRepository.findOneBy({ cpf: fatura.data.beneficiario.cpf })
+          let idDev = null
+          if (devedor) {
+            idDev = devedor.id
+          }
+          console.log({
+            i: this.i,
+            codigo: fatura.data.codigo,
+            valor: fatura.data.valorCobranca,
+            vencimento: fatura.data.dataVencimento,
+            linkFatura: fatura.data.linkFatura,
+            codigoBarras: fatura.data.linhaDigitavel,
+            codigoPix: fatura.data.pixList.brcode,
+            devedor: idDev,
+            nome: fatura.data.beneficiario.nome
+          })
+          this.faturaUl = fatura
+          return {
+            codigo: fatura.data.codigo,
+            valor: fatura.data.valorCobranca,
+            vencimento: fatura.data.dataVencimento,
+            linkFatura: fatura.data.linkFatura,
+            codigoBarras: fatura.data.linhaDigitavel,
+            codigoPix: fatura.data.pixList.brcode,
+            devedor: idDev,
+            nome: fatura.data.beneficiario.nome,
+            cpf: fatura.data.beneficiario.cpf
+          };
         }
-        console.log({
-          i: this.i,
-          codigo: fatura.data.codigo,
-          valor: fatura.data.valorCobranca,
-          vencimento: fatura.data.dataVencimento,
-          linkFatura: fatura.data.linkFatura,
-          codigoBarras: fatura.data.linhaDigitavel,
-          codigoPix: fatura.data.pixList.brcode,
-          devedor: idDev,
-          nome: fatura.data.beneficiario.nome
-        })
-        return {
-          codigo: fatura.data.codigo,
-          valor: fatura.data.valorCobranca,
-          vencimento: fatura.data.dataVencimento,
-          linkFatura: fatura.data.linkFatura,
-          codigoBarras: fatura.data.linhaDigitavel,
-          codigoPix: fatura.data.pixList.brcode,
-          devedor: idDev,
-          nome: fatura.data.beneficiario.nome,
-          cpf: fatura.data.beneficiario.cpf
-        };
       } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 400) {
+          this.faturaNo = this.faturaUl
+        }
         if (axios.isAxiosError(error) && error.response?.status === 429) {
           console.log('rl');
-          await new Promise((r) => setTimeout(r, 5000));
+          await new Promise((r) => setTimeout(r, 300000));
           continue;
         }
         throw error;
@@ -94,7 +104,7 @@ export class FaturasService {
         },
       },
     );
-    const numFaturas = resp.data.slice(0, 4)
+    const numFaturas = resp.data.slice(2, 8)
     console.log(numFaturas)
 
     const respFaturas = await Promise.all(
@@ -120,7 +130,9 @@ export class FaturasService {
         );
 
         if (!existeNaApi) {
-          await this.faturasRepository.remove(faturaDb);
+          //await this.faturasRepository.remove(faturaDb);
+          faturaDb.status = StatusFatura.PAGA
+          this.faturasRepository.save(faturaDb)
         }
       }
 
