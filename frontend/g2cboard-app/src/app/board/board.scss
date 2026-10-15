@@ -1,26 +1,6 @@
-.board {
+.content {
   padding: 24px;
   box-sizing: border-box;
-}
-
-.board-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-
-  h1 {
-    color: var(--text-color);
-    font-size: 1.5rem;
-    font-weight: 650;
-    margin: 4px 0;
-  }
-
-  p {
-    color: var(--font-color);
-    font-size: 0.85rem;
-    margin: 0;
-  }
 }
 
 .eyebrow {
