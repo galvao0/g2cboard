@@ -95,7 +95,7 @@
   margin-top: 14px;
 }
 
-.cont-chart,
+.grafico,
 .cont-estatistica,
 .recent-card {
   background: var(--sidebar-bg);
@@ -360,6 +360,35 @@
 
   &:hover {
     color: var(--accent-color);
+  }
+}
+
+.grafico {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  height: 320px;
+  padding: 18px;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.grafico:hover {
+  border-color: #414650;
+}
+
+.grafico-chart {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .grafico {
+    height: 300px;
+    padding: 12px;
+    border-radius: 12px;
   }
 }
 

@@ -62,15 +62,8 @@
   </div>
 
   <div class="main-cont">
-    <div class="cont-chart">
-      <div class="main-header">
-        <div>
-          <span>FATURAMENTO</span>
-          <h2>Recebimentos</h2>
-        </div>
-      </div>
-
-      <div class="grafico"></div>
+    <div class="grafico">
+      <highcharts-chart [options]="chartOptions" class="grafico-chart"></highcharts-chart>
     </div>
 
     <div class="cont-estatistica">
