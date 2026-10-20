@@ -10,6 +10,14 @@ import {
   LucideUsers,
 } from '@lucide/angular';
 
+export interface devedorResp {
+  id: string,
+  cpf: string
+  nome: string
+  totalDevedor: string
+  faturas: any[]
+}
+
 @Component({
   selector: 'app-listadevedores',
   templateUrl: './lista-devedores.html',
@@ -26,7 +34,7 @@ import {
 export class ListaDevedores {
   private devedoresService = inject(DevedoresService);
 
-  devedores: any[] = [];
+  devedores!: devedorResp[];
   openFaturas!: boolean;
 
   openDetalhes() {
@@ -40,9 +48,13 @@ export class ListaDevedores {
   ngOnInit() {
     this.devedoresService.getDevedores().subscribe({
       next: (data: any) => {
-        this.devedores = data;
+        this.devedores = (data);
+        
       },
       error: (err) => console.error(err),
     });
+    this.devedores.forEach((dev) => {
+      console.log(dev.nome)
+    })
   }
 }

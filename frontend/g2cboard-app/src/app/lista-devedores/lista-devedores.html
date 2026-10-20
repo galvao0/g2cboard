@@ -55,82 +55,85 @@
       </thead>
 
       <tbody>
-        <tr class="devedor-row">
-          <td>
-            <div class="cliente">
-              <div>
-                <strong>Pedro Galvao</strong>
-              </div>
-            </div>
-          </td>
-
-          <td>123.456.789-10</td>
-
-          <td>
-            <strong class="valor">R$ 300,00</strong>
-          </td>
-
-          <td>
-            <span class="faturas">3</span>
-          </td>
-
-          <td>21/12/2007</td>
-
-          <td>
-            <span class="status atrasado">Atrasado</span>
-          </td>
-
-          <td>
-            <button class="btn-chevron" type="button" (click)="openDetalhes()">
-              @if (!openFaturas) {
-                <svg lucideChevronDown></svg>
-              } @else {
-                <svg lucideChevronUp></svg>
-              }
-            </button>
-          </td>
-        </tr>
-
-        @if (openFaturas) {
-          <tr class="faturas-row">
-            <td colspan="7">
-              <div class="faturas-cont">
-                <div class="faturas-header">
-                  <span>CÓDIGO</span>
-                  <span>VENCIMENTO</span>
-                  <span>VALOR</span>
-                  <span>BOLETO</span>
-                  <span>PIX</span>
-                  <span>LINK</span>
-                </div>
-
-                <div class="fatura">
-                  <span>U2SXLFNU51</span>
-                  <span>21/12/2007</span>
-
-                  <strong>
-                    <small>R$</small>
-                    100,00
-                  </strong>
-
-                  <button (click)="copy()" type="button">
-                    CB
-                    <svg lucideCopy></svg>
-                  </button>
-
-                  <button type="button">
-                    PIX
-                    <svg lucideCopy></svg>
-                  </button>
-
-                  <button type="button">
-                    LINK
-                    <svg lucideCopy></svg>
-                  </button>
+        @for(devedor of devedores; track devedor.cpf) {
+          <tr class="devedor-row">
+            
+            <td>
+              <div class="cliente">
+                <div>
+                  <strong>{{devedor.nome}}</strong>
                 </div>
               </div>
             </td>
+
+            <td>{{devedor.cpf}}</td>
+
+            <td>
+              <strong class="valor">R$ {{devedor.totalDevedor}}</strong>
+            </td>
+
+            <td>
+              <span class="faturas">3</span>
+            </td>
+
+            <td>21/12/2007</td>
+
+            <td>
+              <span class="status atrasado">Atrasado</span>
+            </td>
+
+            <td>
+              <button class="btn-chevron" type="button" (click)="openDetalhes()">
+                @if (!openFaturas) {
+                  <svg lucideChevronDown></svg>
+                } @else {
+                  <svg lucideChevronUp></svg>
+                }
+              </button>
+            </td>
+          
           </tr>
+          @if (openFaturas) {
+            <tr class="faturas-row">
+              <td colspan="7">
+                <div class="faturas-cont">
+                  <div class="faturas-header">
+                    <span>CÓDIGO</span>
+                    <span>VENCIMENTO</span>
+                    <span>VALOR</span>
+                    <span>BOLETO</span>
+                    <span>PIX</span>
+                    <span>LINK</span>
+                  </div>
+
+                  <div class="fatura">
+                    <span>U2SXLFNU51</span>
+                    <span>21/12/2007</span>
+
+                    <strong>
+                      <small>R$</small>
+                      100,00
+                    </strong>
+
+                    <button (click)="copy()" type="button">
+                      CB
+                      <svg lucideCopy></svg>
+                    </button>
+
+                    <button type="button">
+                      PIX
+                      <svg lucideCopy></svg>
+                    </button>
+
+                    <button type="button">
+                      LINK
+                      <svg lucideCopy></svg>
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          }
         }
       </tbody>
     </table>

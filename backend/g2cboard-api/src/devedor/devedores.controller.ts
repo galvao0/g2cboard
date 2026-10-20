@@ -8,6 +8,11 @@ export class DevedoresController {
     ) {}
     @Get()
     async getDevedores(): Promise<any> {
-        return await this.devedoresService.getDevedores()
+        return await this.devedoresService.getDevedoresDb()
     }
+    @Get('/sync')
+    async sync(): Promise<any> {
+        return this.devedoresService.getDevedores()
+    }
+
 }

@@ -70,4 +70,12 @@ export class DevedoresService {
       },
     });
   }
+
+  async getDevedoresDb() {
+    return this.devedorRepository.find({
+      relations: {
+        faturas: true
+      }
+    })
+  }
 }
