@@ -1,7 +1,7 @@
+
 import { Component, OnInit, inject } from '@angular/core';
 import { DevedoresService } from '../service/devedores/devedores-service';
 import {
-  LucideAArrowDown,
   LucideChevronDown,
   LucideChevronUp,
   LucideCopy,
@@ -11,11 +11,11 @@ import {
 } from '@lucide/angular';
 
 export interface devedorResp {
-  id: string,
-  cpf: string
-  nome: string
-  totalDevedor: string
-  faturas: any[]
+  id: string;
+  cpf: string;
+  nome: string;
+  totalDevedor: string;
+  faturas: any[];
 }
 
 @Component({
@@ -31,30 +31,57 @@ export interface devedorResp {
     LucideTrendingUp,
   ],
 })
-export class ListaDevedores {
+export class ListaDevedores implements OnInit {
   private devedoresService = inject(DevedoresService);
 
-  devedores!: devedorResp[];
-  openFaturas!: boolean;
+  devedores: devedorResp[] = [];
 
-  openDetalhes() {
+  openFaturas = false;
+  paginaAtual = 1;
+  itensPorPagina = 10;
+
+  get devedoresPaginados(): devedorResp[] {
+    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
+
+    return this.devedores.slice(
+      inicio,
+      inicio + this.itensPorPagina
+    );
+  }
+
+  get totalPaginas(): number {
+    return Math.ceil(this.devedores.length / this.itensPorPagina);
+  }
+
+  paginaAnterior(): void {
+    if (this.paginaAtual > 1) {
+      this.paginaAtual--;
+      this.openFaturas = false;
+    }
+  }
+
+  proximaPagina(): void {
+    if (this.paginaAtual < this.totalPaginas) {
+      this.paginaAtual++;
+      this.openFaturas = false;
+    }
+  }
+
+  openDetalhes(): void {
     this.openFaturas = !this.openFaturas;
   }
 
-  copy() {
+  copy(): void {
     navigator.clipboard.writeText('p');
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.devedoresService.getDevedores().subscribe({
-      next: (data: any) => {
-        this.devedores = (data);
-        
+      next: (data: devedorResp[]) => {
+        this.devedores = data;
+        this.paginaAtual = 1;
       },
       error: (err) => console.error(err),
     });
-    this.devedores.forEach((dev) => {
-      console.log(dev.nome)
-    })
   }
 }
