@@ -1,15 +1,14 @@
+
 <div class="content">
   <div class="stats">
     <div class="stat-card">
       <div class="stat-icon">
         <svg lucideUsers></svg>
       </div>
-
       <div>
         <span>Total devedores</span>
         <strong>1</strong>
       </div>
-
       <small>+1,4%</small>
     </div>
 
@@ -17,12 +16,10 @@
       <div class="stat-icon">
         <svg lucideTrendingDown></svg>
       </div>
-
       <div>
         <span>Total devedor</span>
         <strong>R$ 300</strong>
       </div>
-
       <small>+1,2%</small>
     </div>
 
@@ -30,12 +27,10 @@
       <div class="stat-icon">
         <svg lucideTrendingUp></svg>
       </div>
-
       <div>
         <span>Total recebido</span>
         <strong>R$ 1</strong>
       </div>
-
       <small>+0,7%</small>
     </div>
   </div>
@@ -55,25 +50,24 @@
       </thead>
 
       <tbody>
-        @for(devedor of devedores; track devedor.cpf) {
+        @for (devedor of devedoresPaginados; track devedor.cpf) {
           <tr class="devedor-row">
-            
             <td>
               <div class="cliente">
                 <div>
-                  <strong>{{devedor.nome}}</strong>
+                  <strong>{{ devedor.nome }}</strong>
                 </div>
               </div>
             </td>
 
-            <td>{{devedor.cpf}}</td>
+            <td>{{ devedor.cpf }}</td>
 
             <td>
-              <strong class="valor">R$ {{devedor.totalDevedor}}</strong>
+              <strong class="valor">R$ {{ devedor.totalDevedor }}</strong>
             </td>
 
             <td>
-              <span class="faturas">3</span>
+              <span class="faturas">{{ devedor.faturas.length }}</span>
             </td>
 
             <td>21/12/2007</td>
@@ -83,7 +77,11 @@
             </td>
 
             <td>
-              <button class="btn-chevron" type="button" (click)="openDetalhes()">
+              <button
+                class="btn-chevron"
+                type="button"
+                (click)="openDetalhes()"
+              >
                 @if (!openFaturas) {
                   <svg lucideChevronDown></svg>
                 } @else {
@@ -91,8 +89,8 @@
                 }
               </button>
             </td>
-          
           </tr>
+
           @if (openFaturas) {
             <tr class="faturas-row">
               <td colspan="7">
@@ -106,36 +104,67 @@
                     <span>LINK</span>
                   </div>
 
-                  <div class="fatura">
-                    <span>U2SXLFNU51</span>
-                    <span>21/12/2007</span>
+                  @for (fatura of devedor.faturas; track $index) {
+                    <div class="fatura">
+                      <span>{{ fatura.codigo }}</span>
+                      <span>{{ fatura.vencimento }}</span>
 
-                    <strong>
-                      <small>R$</small>
-                      100,00
-                    </strong>
+                      <strong>
+                        <small>R$</small>
+                        {{ fatura.valor }}
+                      </strong>
 
-                    <button (click)="copy()" type="button">
-                      CB
-                      <svg lucideCopy></svg>
-                    </button>
+                      <button type="button" (click)="copy()">
+                        CB
+                        <svg lucideCopy></svg>
+                      </button>
 
-                    <button type="button">
-                      PIX
-                      <svg lucideCopy></svg>
-                    </button>
+                      <button type="button">
+                        PIX
+                        <svg lucideCopy></svg>
+                      </button>
 
-                    <button type="button">
-                      LINK
-                      <svg lucideCopy></svg>
-                    </button>
-                  </div>
+                      <button type="button">
+                        LINK
+                        <svg lucideCopy></svg>
+                      </button>
+                    </div>
+                  }
                 </div>
               </td>
             </tr>
           }
+        } @empty {
+          <tr>
+            <td colspan="7">Nenhum devedor encontrado.</td>
+          </tr>
         }
       </tbody>
     </table>
+  </div>
+
+  <div class="paginacao">
+    <span>
+      Página {{ paginaAtual }} de {{ totalPaginas }}
+      ({{ devedores.length }} devedores)
+    </span>
+
+    <div class="paginacao-botoes">
+      <button
+        type="button"
+        (click)="paginaAnterior()"
+        [disabled]="paginaAtual === 1"
+      >
+        Anterior
+      </button>
+
+      <button
+        type="button"
+        (click)="proximaPagina()"
+        [disabled]="paginaAtual >= totalPaginas || totalPaginas === 0"
+      >
+        Próxima
+      </button>
+    </div>
   </div>
 </div>
