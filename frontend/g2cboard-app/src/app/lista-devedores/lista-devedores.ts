@@ -38,16 +38,16 @@ export class ListaDevedores implements OnInit {
   devedorAbertoId: string | null = null;
 
   paginaAtual = 1;
-  itensPorPagina = 10;
+  itensPagina = 10;
 
   get devedoresPaginados(): devedorResp[] {
-    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
+    const inicio = (this.paginaAtual - 1) * this.itensPagina;
 
-    return this.devedores.slice(inicio, inicio + this.itensPorPagina);
+    return this.devedores.slice(inicio, inicio + this.itensPagina);
   }
 
   get totalPaginas(): number {
-    return Math.ceil(this.devedores.length / this.itensPorPagina);
+    return Math.ceil(this.devedores.length / this.itensPagina);
   }
 
   paginaAnterior(): void {
