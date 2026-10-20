@@ -1,4 +1,3 @@
-
 <div class="content">
   <div class="stats">
     <div class="stat-card">
@@ -77,12 +76,8 @@
             </td>
 
             <td>
-              <button
-                class="btn-chevron"
-                type="button"
-                (click)="openDetalhes()"
-              >
-                @if (!openFaturas) {
+              <button class="btn-chevron" type="button" (click)="openDetalhes(devedor.id)">
+                @if (devedorAbertoId !== devedor.id) {
                   <svg lucideChevronDown></svg>
                 } @else {
                   <svg lucideChevronUp></svg>
@@ -91,7 +86,7 @@
             </td>
           </tr>
 
-          @if (openFaturas) {
+          @if (devedorAbertoId === devedor.id) {
             <tr class="faturas-row">
               <td colspan="7">
                 <div class="faturas-cont">
@@ -144,23 +139,16 @@
   </div>
 
   <div class="paginacao">
-    <span>
-      Página {{ paginaAtual }} de {{ totalPaginas }}
-      ({{ devedores.length }} devedores)
-    </span>
+    <span> Página {{ paginaAtual }} de {{ totalPaginas }} ({{ devedores.length }} devedores) </span>
 
     <div class="paginacao-botoes">
-      <button
-        type="button"
-        (click)="paginaAnterior()"
-        [disabled]="paginaAtual === 1"
-      >
+      <button type="button" (click)="paginaAnterior()" [disabled]="paginaAtual === 1">
         Anterior
       </button>
 
       <button
         type="button"
-        (click)="proximaPagin()"
+        (click)="proximaPagina()"
         [disabled]="paginaAtual >= totalPaginas || totalPaginas === 0"
       >
         Próxima

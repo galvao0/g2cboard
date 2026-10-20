@@ -1,4 +1,3 @@
-
 import { Component, OnInit, inject } from '@angular/core';
 import { DevedoresService } from '../service/devedores/devedores-service';
 import {
@@ -36,17 +35,15 @@ export class ListaDevedores implements OnInit {
 
   devedores: devedorResp[] = [];
 
-  openFaturas = false;
+  devedorAbertoId: string | null = null;
+
   paginaAtual = 1;
   itensPorPagina = 10;
 
   get devedoresPaginados(): devedorResp[] {
     const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
 
-    return this.devedores.slice(
-      inicio,
-      inicio + this.itensPorPagina
-    );
+    return this.devedores.slice(inicio, inicio + this.itensPorPagina);
   }
 
   get totalPaginas(): number {
@@ -56,19 +53,23 @@ export class ListaDevedores implements OnInit {
   paginaAnterior(): void {
     if (this.paginaAtual > 1) {
       this.paginaAtual--;
-      this.openFaturas = false;
+      this.devedorAbertoId = null;
     }
   }
 
   proximaPagina(): void {
     if (this.paginaAtual < this.totalPaginas) {
       this.paginaAtual++;
-      this.openFaturas = false;
+      this.devedorAbertoId = null;
     }
   }
 
-  openDetalhes(): void {
-    this.openFaturas = !this.openFaturas;
+  openDetalhes(devedorId: string): void {
+    if (this.devedorAbertoId === devedorId) {
+      this.devedorAbertoId = null;
+    } else {
+      this.devedorAbertoId = devedorId;
+    }
   }
 
   copy(): void {
@@ -76,12 +77,13 @@ export class ListaDevedores implements OnInit {
   }
 
   ngOnInit(): void {
-    this.devedoresService.getDevedores().subscribe({
+    /*this.devedoresService.getDevedores().subscribe({
       next: (data: devedorResp[]) => {
         this.devedores = data;
         this.paginaAtual = 1;
+        this.devedorAbertoId = null;
       },
       error: (err) => console.error(err),
-    });
+    });*/
   }
 }
