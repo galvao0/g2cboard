@@ -72,7 +72,8 @@ export class DevedoresService {
   }
 
   async getDevedoresDb() {
-    return this.devedorRepository.find({
+    await this.sincronizarDevedores()
+    return await this.devedorRepository.find({
       relations: {
         faturas: true
       }

@@ -77,13 +77,16 @@ export class ListaDevedores implements OnInit {
   }
 
   ngOnInit(): void {
-    /*this.devedoresService.getDevedores().subscribe({
-      next: (data: devedorResp[]) => {
-        this.devedores = data;
+    this.devedoresService.getDevedores().subscribe({
+      next: (data: any) =>  {
+        data = Array.from(data)
+        this.devedores = (data);
         this.paginaAtual = 1;
         this.devedorAbertoId = null;
+        console.log(this.devedores)
+        console.log(this.devedores.length)
       },
       error: (err) => console.error(err),
-    });*/
+    });
   }
 }

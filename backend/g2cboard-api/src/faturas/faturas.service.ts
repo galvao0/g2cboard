@@ -85,7 +85,7 @@ export class FaturasService {
         }
         if (axios.isAxiosError(error) && error.response?.status === 429) {
           console.log('rl');
-          await new Promise((r) => setTimeout(r, 300000));
+          await new Promise((r) => setTimeout(r, 600000));
           continue;
         }
         throw error;
@@ -104,7 +104,7 @@ export class FaturasService {
         },
       },
     );
-    const numFaturas = resp.data
+    const numFaturas = resp.data.slice(4000, 6500)
     console.log(numFaturas)
 
     const respFaturas = await Promise.all(
