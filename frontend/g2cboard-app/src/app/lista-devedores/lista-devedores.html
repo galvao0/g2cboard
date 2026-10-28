@@ -6,7 +6,7 @@
       </div>
       <div>
         <span>Total devedores</span>
-        <strong>1</strong>
+        <strong>{{devedores.length}}</strong>
       </div>
       <small>+1,4%</small>
     </div>
@@ -17,7 +17,7 @@
       </div>
       <div>
         <span>Total devedor</span>
-        <strong>R$ 300</strong>
+        <strong>{{toMoney(Number(totalDevedor.toFixed(2)))}}</strong>
       </div>
       <small>+1,2%</small>
     </div>
@@ -28,7 +28,7 @@
       </div>
       <div>
         <span>Total recebido</span>
-        <strong>R$ 1</strong>
+        <strong>{{ toMoney(totalRecebido) }}</strong>
       </div>
       <small>+0,7%</small>
     </div>
@@ -49,7 +49,7 @@
       </thead>
 
       <tbody>
-        @for (devedor of devedores; track devedor.cpf) {
+        @for (devedor of devedoresPaginados; track devedor.cpf) {
           <tr class="devedor-row">
             <td>
               <div class="cliente">
@@ -62,17 +62,17 @@
             <td>{{ devedor.cpf }}</td>
 
             <td>
-              <strong class="valor">R$ {{ devedor.totalDevedor }}</strong>
+              <strong class="valor">R$ {{ toMoney(Number(devedor.totalDevedor).toFixed(2)) }}</strong>
             </td>
 
             <td>
               <span class="faturas">{{ devedor.faturas.length }}</span>
             </td>
 
-            <td>21/12/2007</td>
+            <td>{{ devedor.faturas[devedor.faturas.length - 1].vencimento }}</td>
 
             <td>
-              <span class="status atrasado">Atrasado</span>
+              <span class="status atrasado" [class.paga]="checkStatusDevedor(devedor.faturas) === 'Em Dia'">{{ checkStatusDevedor(devedor.faturas) }}</span>
             </td>
 
             <td>
@@ -97,6 +97,7 @@
                     <span>BOLETO</span>
                     <span>PIX</span>
                     <span>LINK</span>
+                    <span>STATUS</span>
                   </div>
 
                   @for (fatura of devedor.faturas; track $index) {
@@ -109,20 +110,24 @@
                         {{ fatura.valor }}
                       </strong>
 
-                      <button type="button" (click)="copy()">
+                      <button type="button" (click)="copy(fatura.codigoBarras)">
                         CB
                         <svg lucideCopy></svg>
                       </button>
 
-                      <button type="button">
+                      <button type="button" (click)="copy(fatura.codigoPix)">
                         PIX
                         <svg lucideCopy></svg>
                       </button>
 
-                      <button type="button">
+                      <button type="button" (click)="copy(fatura.linkFatura)">
                         LINK
                         <svg lucideCopy></svg>
                       </button>
+
+                      <td>
+                        <span class="status atrasado" [class.paga]="fatura.status === 'paga'">{{ fatura.status }}</span>
+                      </td>
                     </div>
                   }
                 </div>

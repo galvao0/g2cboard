@@ -104,7 +104,7 @@ export class FaturasService {
         },
       },
     );
-    const numFaturas = resp.data.slice(4000, 6500)
+    const numFaturas = resp.data
     console.log(numFaturas)
 
     const respFaturas = await Promise.all(

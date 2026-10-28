@@ -13,7 +13,7 @@ export interface devedorResp {
   id: string;
   cpf: string;
   nome: string;
-  totalDevedor: string;
+  totalDevedor: number;
   faturas: any[];
 }
 
@@ -34,11 +34,14 @@ export class ListaDevedores implements OnInit {
   private devedoresService = inject(DevedoresService);
 
   devedores: devedorResp[] = [];
+  ultimosDevedores: devedorResp[] = []
 
   devedorAbertoId: string | null = null;
 
   paginaAtual = 1;
   itensPagina = 10;
+  totalDevedor = 0
+  totalRecebido = 0
 
   get devedoresPaginados(): devedorResp[] {
     const inicio = (this.paginaAtual - 1) * this.itensPagina;
@@ -72,8 +75,8 @@ export class ListaDevedores implements OnInit {
     }
   }
 
-  copy(): void {
-    navigator.clipboard.writeText('p');
+  copy(code: string): void {
+    navigator.clipboard.writeText(code);
   }
 
   ngOnInit(): void {
@@ -85,8 +88,51 @@ export class ListaDevedores implements OnInit {
         this.devedorAbertoId = null;
         console.log(this.devedores)
         console.log(this.devedores.length)
+
+        this.devedores.map((d) => {
+          d.faturas.map((f) => {
+            if (f.status === "paga") {
+              this.totalRecebido += Number(f.valor)
+            } else {
+              this.totalDevedor += Number(f.valor)
+            }
+
+            if (f.vencimento.slice(6) === '2026') {
+              if (this.ultimosDevedores.length < 3) {
+                this.ultimosDevedores.push(d)
+              }
+            }
+          })
+        })
+        console.log(this.ultimosDevedores)
       },
       error: (err) => console.error(err),
     });
+  }
+
+  Number(v: any): Number {
+    return Number(v)
+  }
+
+  toMoney(v: any) {
+    const formatter = new Intl.NumberFormat('pt-BR');
+
+    return formatter.format(v)
+  }
+
+  checkStatusDevedor(faturas: any[]) {
+    let totalFaturasPagas = 0
+
+    faturas.map((f) => {
+      if (f.status === "paga") {
+        totalFaturasPagas++
+      }
+    })
+
+    if(totalFaturasPagas === faturas.length) {
+      return "Em Dia"
+    }
+
+    return "Em Atraso"
   }
 }

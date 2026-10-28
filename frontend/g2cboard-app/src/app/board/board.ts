@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   LucideArrowDownFromLine,
@@ -10,6 +10,7 @@ import {
   LucideUsers,
 } from '@lucide/angular';
 import { HighchartsChartComponent } from 'highcharts-angular';
+import { ListaDevedores } from '../lista-devedores/lista-devedores';
 @Component({
   selector: 'app-board',
   templateUrl: './board.html',
@@ -25,9 +26,11 @@ import { HighchartsChartComponent } from 'highcharts-angular';
     HighchartsChartComponent,
   ],
 })
-export class Board {
+export class Board implements OnInit {
   constructor(private readonly router: Router) {}
   openFaturas!: boolean;
+
+  listaDevedores = new ListaDevedores()
 
   chartOptions: Highcharts.Options = {
     chart: {
@@ -189,10 +192,23 @@ export class Board {
     },
   };
 
-  openDetalhes() {
-    this.openFaturas = !this.openFaturas;
+  openDetalhes(devedorId: string): void {
+    if (this.listaDevedores.devedorAbertoId === devedorId) {
+      this.listaDevedores.devedorAbertoId = null;
+    } else {
+      this.listaDevedores.devedorAbertoId = devedorId;
+    }
   }
+
   open() {
     this.router.navigateByUrl('/listadevedores');
+  }
+
+  ngOnInit(): void {
+    this.listaDevedores.ngOnInit()
+  }
+
+  copy(code: string) {
+    navigator.clipboard.writeText(code)
   }
 }

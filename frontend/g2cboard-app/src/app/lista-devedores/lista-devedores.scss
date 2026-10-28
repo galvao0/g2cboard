@@ -302,6 +302,12 @@ tr:hover td {
   background: #15171b;
 }
 
+.paga {
+  color: #1faf02;
+  background-color: #1faf023f;
+  line-height: 1.1;
+}
+
 .faturas-header,
 .fatura {
   display: grid;
@@ -309,6 +315,7 @@ tr:hover td {
     1.5fr
     1.2fr
     1fr
+    0.7fr
     0.7fr
     0.7fr
     0.7fr;

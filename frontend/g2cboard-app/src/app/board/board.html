@@ -1,12 +1,28 @@
 <div class="content">
   <div class="cards">
+
+    <div class="card">
+      <div class="card-top">
+        <span>Faturamento</span>
+        <svg lucideBanknoteArrowDown></svg>
+      </div>
+
+      <strong>R$ 0</strong>
+
+      <div class="vari positivo">
+        <svg lucideTrendingUp></svg>
+        0,7%
+        <span>vs. mês anterior</span>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-top">
         <span>Total de devedores</span>
         <svg lucideUsers></svg>
       </div>
 
-      <strong>1</strong>
+      <strong>{{ listaDevedores.devedores.length }}</strong>
 
       <div class="vari positivo">
         <svg lucideTrendingUp></svg>
@@ -21,13 +37,14 @@
         <svg lucideTrendingDown></svg>
       </div>
 
-      <strong>R$ 300</strong>
+      <strong>R$ {{ listaDevedores.toMoney(listaDevedores.totalDevedor) }}</strong>
 
       <div class="vari positivo">
         <svg lucideTrendingDown></svg>
         1,2%
         <span>vs. mês anterior</span>
       </div>
+
     </div>
 
     <div class="card">
@@ -36,22 +53,7 @@
         <svg lucideTrendingUp></svg>
       </div>
 
-      <strong>R$ 0</strong>
-
-      <div class="vari positivo">
-        <svg lucideTrendingUp></svg>
-        0,7%
-        <span>vs. mês anterior</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-top">
-        <span>Faturamento</span>
-        <svg lucideBanknoteArrowDown></svg>
-      </div>
-
-      <strong>R$ 0</strong>
+      <strong>R$ {{ listaDevedores.toMoney(listaDevedores.totalRecebido) }}</strong>
 
       <div class="vari positivo">
         <svg lucideTrendingUp></svg>
@@ -76,10 +78,10 @@
       <div class="item-estatistica">
         <div>
           <span>Recebido</span>
-          <strong>R$ 0</strong>
+          <strong>R$ {{ listaDevedores.toMoney(listaDevedores.totalRecebido) }}</strong>
         </div>
 
-        <span class="percentagem">0,0%</span>
+        <span class="percentagem">1,0%</span>
       </div>
 
       <div class="progress">
@@ -89,7 +91,7 @@
       <div class="item-estatistica">
         <div>
           <span>Em aberto</span>
-          <strong>R$ 300</strong>
+          <strong>R$ {{ listaDevedores.toMoney(listaDevedores.totalDevedor) }}</strong>
         </div>
 
         <span class="percentagem">100%</span>
@@ -126,79 +128,83 @@
       </thead>
 
       <tbody>
-        <tr>
-          <td>
-            <strong>Pedro Galvao</strong>
-          </td>
+        @for (ul of listaDevedores.ultimosDevedores; track listaDevedores.ultimosDevedores) {
+          <tr>
+            <td>
+              <strong>{{ ul.nome }}</strong>
+            </td>
 
-          <td>123.456.789-10</td>
+            <td>{{ ul.cpf }}</td>
 
-          <td>
-            <strong class="valor">R$ 300,00</strong>
-          </td>
+            <td>
+              <strong class="valor">R$ {{ ul.totalDevedor }}</strong>
+            </td>
 
-          <td>
-            <span class="status vencida">Vencida</span>
-          </td>
+            <td>
+              <span class="status vencida">{{ listaDevedores.checkStatusDevedor(ul.faturas) }}</span>
+            </td>
 
-          <td>13/10/2026</td>
+            <td>{{ ul.faturas[ul.faturas.length - 1].vencimento }}</td>
 
-          <td>
-            <button class="btn-chevron" type="button" (click)="openDetalhes()">
-              @if (!openFaturas) {
-                <svg lucideChevronDown></svg>
-              } @else {
-                <svg lucideChevronUp></svg>
-              }
-            </button>
-          </td>
-        </tr>
+            <td>
+              <button class="btn-chevron" type="button" (click)="openDetalhes(ul.id)">
+                @if (listaDevedores.devedorAbertoId !== ul.id) {
+                  <svg lucideChevronDown></svg>
+                } @else {
+                  <svg lucideChevronUp></svg>
+                }
+              </button>
+            </td>
+          </tr>
+          @if (listaDevedores.devedorAbertoId === ul.id) {
+            <tr class="faturas-row">
+              <td colspan="6">
+                <table class="faturas-table">
+                  <thead>
+                    <tr>
+                      <th>CÓDIGO</th>
+                      <th>VENCIMENTO</th>
+                      <th>VALOR</th>
+                      <th>BOLETO</th>
+                      <th>PIX</th>
+                      <th>LINK</th>
+                    </tr>
+                  </thead>
 
-        @if (openFaturas) {
-          <tr class="faturas-row">
-            <td colspan="6">
-              <table class="faturas-table">
-                <thead>
-                  <tr>
-                    <th>CÓDIGO</th>
-                    <th>VENCIMENTO</th>
-                    <th>VALOR</th>
-                    <th>BOLETO</th>
-                    <th>PIX</th>
-                    <th>LINK</th>
-                  </tr>
-                </thead>
+                  @for (fatura of ul.faturas; track $index) {
+                    <div class="fatura">
+                      <span>{{ fatura.codigo }}</span>
+                      <span>{{ fatura.vencimento }}</span>
 
-                <tbody>
-                  <tr>
-                    <td>U2SXLFNU51</td>
-                    <td>21/12/2026</td>
-                    <td>
-                      <strong class="valor">R$ 100,00</strong>
-                    </td>
-                    <td>
-                      <button class="btn-copy">
+                      <strong>
+                        <small>R$</small>
+                        {{ fatura.valor }}
+                      </strong>
+
+                      <button type="button" (click)="copy(fatura.codigoBarras)">
                         CB
                         <svg lucideCopy></svg>
                       </button>
-                    </td>
-                    <td>
-                      <button class="btn-copy">
+
+                      <button type="button" (click)="copy(fatura.codigoPix)">
                         PIX
                         <svg lucideCopy></svg>
                       </button>
-                    </td>
-                    <td>
-                      <button class="btn-copy">
+
+                      <button type="button" (click)="copy(fatura.linkFatura)">
                         LINK
                         <svg lucideCopy></svg>
                       </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
+
+                      <td>
+                        <span class="status atrasado" [class.paga]="fatura.status === 'paga'">{{ fatura.status }}</span>
+                      </td>
+                    </div>
+                  }
+                </table>
+              </td>
+            </tr>
+          }
         }
       </tbody>
     </table>
