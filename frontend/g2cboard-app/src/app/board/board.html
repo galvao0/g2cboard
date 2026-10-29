@@ -1,18 +1,31 @@
 <div class="content">
-  <div class="cards">
+  @let r = svc.resumo();
 
+  <div class="barra-filtros">
+    <app-filtro-chips
+      rotulo="Período"
+      [opcoes]="svc.opcoesPeriodo"
+      [valor]="svc.periodo()"
+      (mudou)="svc.setPeriodo($event)"
+    />
+  </div>
+
+  <div class="cards">
     <div class="card">
       <div class="card-top">
         <span>Faturamento</span>
         <svg lucideBanknoteArrowDown></svg>
       </div>
-
-      <strong>R$ 0</strong>
-
-      <div class="vari positivo">
-        <svg lucideTrendingUp></svg>
-        0,7%
-        <span>vs. mês anterior</span>
+      <strong>R$ {{ svc.toMoney(r?.faturamento?.atual ?? 0) }}</strong>
+      @let bFat = svc.bom(r?.faturamento?.variacao);
+      <div class="vari" [class]="svc.classeVar(r?.faturamento?.variacao)">
+        @if (bFat === true) {
+          <svg lucideTrendingUp></svg>
+        } @else if (bFat === false) {
+          <svg lucideTrendingDown></svg>
+        }
+        {{ svc.fmtVar(r?.faturamento?.variacao) }}
+        <span>{{ svc.rotuloComparacao() }}</span>
       </div>
     </div>
 
@@ -21,13 +34,16 @@
         <span>Total de devedores</span>
         <svg lucideUsers></svg>
       </div>
-
-      <strong>{{ listaDevedores.devedores.length }}</strong>
-
-      <div class="vari positivo">
-        <svg lucideTrendingUp></svg>
-        1,4%
-        <span>vs. mês anterior</span>
+      <strong>{{ r?.totalDevedores?.atual ?? 0 }}</strong>
+      @let bDev = svc.bom(r?.totalDevedores?.variacao, true);
+      <div class="vari" [class]="svc.classeVar(r?.totalDevedores?.variacao, true)">
+        @if (bDev === true) {
+          <svg lucideTrendingUp></svg>
+        } @else if (bDev === false) {
+          <svg lucideTrendingDown></svg>
+        }
+        {{ svc.fmtVar(r?.totalDevedores?.variacao) }}
+        <span>{{ svc.rotuloComparacao() }}</span>
       </div>
     </div>
 
@@ -36,15 +52,17 @@
         <span>Total devedor</span>
         <svg lucideTrendingDown></svg>
       </div>
-
-      <strong>R$ {{ listaDevedores.toMoney(listaDevedores.totalDevedor) }}</strong>
-
-      <div class="vari positivo">
-        <svg lucideTrendingDown></svg>
-        1,2%
-        <span>vs. mês anterior</span>
+      <strong>R$ {{ svc.toMoney(r?.totalDevedor?.atual ?? 0) }}</strong>
+      @let bTot = svc.bom(r?.totalDevedor?.variacao, true);
+      <div class="vari" [class]="svc.classeVar(r?.totalDevedor?.variacao, true)">
+        @if (bTot === true) {
+          <svg lucideTrendingUp></svg>
+        } @else if (bTot === false) {
+          <svg lucideTrendingDown></svg>
+        }
+        {{ svc.fmtVar(r?.totalDevedor?.variacao) }}
+        <span>{{ svc.rotuloComparacao() }}</span>
       </div>
-
     </div>
 
     <div class="card">
@@ -52,20 +70,27 @@
         <span>Total recebido</span>
         <svg lucideTrendingUp></svg>
       </div>
-
-      <strong>R$ {{ listaDevedores.toMoney(listaDevedores.totalRecebido) }}</strong>
-
-      <div class="vari positivo">
-        <svg lucideTrendingUp></svg>
-        0,7%
-        <span>vs. mês anterior</span>
+      <strong>R$ {{ svc.toMoney(r?.totalRecebido?.atual ?? 0) }}</strong>
+      @let bRec = svc.bom(r?.totalRecebido?.variacao);
+      <div class="vari" [class]="svc.classeVar(r?.totalRecebido?.variacao)">
+        @if (bRec === true) {
+          <svg lucideTrendingUp></svg>
+        } @else if (bRec === false) {
+          <svg lucideTrendingDown></svg>
+        }
+        {{ svc.fmtVar(r?.totalRecebido?.variacao) }}
+        <span>{{ svc.rotuloComparacao() }}</span>
       </div>
     </div>
   </div>
 
   <div class="main-cont">
     <div class="grafico">
-      <highcharts-chart [options]="chartOptions" class="grafico-chart"></highcharts-chart>
+      <highcharts-chart
+        [options]="chartOptions()"
+        [update]="true"
+        class="grafico-chart"
+      ></highcharts-chart>
     </div>
 
     <div class="cont-estatistica">
@@ -75,30 +100,28 @@
         </div>
       </div>
 
+      @let rp = svc.resumoPeriodo();
+
       <div class="item-estatistica">
         <div>
           <span>Recebido</span>
-          <strong>R$ {{ listaDevedores.toMoney(listaDevedores.totalRecebido) }}</strong>
+          <strong>R$ {{ svc.toMoney(rp.recebido) }}</strong>
         </div>
-
-        <span class="percentagem">1,0%</span>
+        <span class="percentagem">{{ svc.toPercent(rp.pctRecebido) }}</span>
       </div>
-
       <div class="progress">
-        <div class="progress-inter"></div>
+        <div class="progress-inter" [style.width.%]="rp.pctRecebido"></div>
       </div>
 
       <div class="item-estatistica">
         <div>
           <span>Em aberto</span>
-          <strong>R$ {{ listaDevedores.toMoney(listaDevedores.totalDevedor) }}</strong>
+          <strong>R$ {{ svc.toMoney(rp.aberto) }}</strong>
         </div>
-
-        <span class="percentagem">100%</span>
+        <span class="percentagem">{{ svc.toPercent(rp.pctAberto) }}</span>
       </div>
-
       <div class="progress">
-        <div class="progress-inter aberto"></div>
+        <div class="progress-inter aberto" [style.width.%]="rp.pctAberto"></div>
       </div>
     </div>
   </div>
@@ -115,98 +138,97 @@
       </button>
     </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>CLIENTE</th>
-          <th>CPF</th>
-          <th>VALOR</th>
-          <th>STATUS</th>
-          <th>DATA</th>
-          <th></th>
-        </tr>
-      </thead>
-
-      <tbody>
-        @for (ul of listaDevedores.ultimosDevedores; track listaDevedores.ultimosDevedores) {
+    <div class="table-box">
+      <table>
+        <thead>
           <tr>
-            <td>
-              <strong>{{ ul.nome }}</strong>
-            </td>
-
-            <td>{{ ul.cpf }}</td>
-
-            <td>
-              <strong class="valor">R$ {{ ul.totalDevedor }}</strong>
-            </td>
-
-            <td>
-              <span class="status vencida">{{ listaDevedores.checkStatusDevedor(ul.faturas) }}</span>
-            </td>
-
-            <td>{{ ul.faturas[ul.faturas.length - 1].vencimento }}</td>
-
-            <td>
-              <button class="btn-chevron" type="button" (click)="openDetalhes(ul.id)">
-                @if (listaDevedores.devedorAbertoId !== ul.id) {
-                  <svg lucideChevronDown></svg>
-                } @else {
-                  <svg lucideChevronUp></svg>
-                }
-              </button>
-            </td>
+            <th>CLIENTE</th>
+            <th>CPF</th>
+            <th>VALOR DEVIDO</th>
+            <th>FATURAS</th>
+            <th>ÚLTIMO VENCIMENTO</th>
+            <th>STATUS</th>
+            <th></th>
           </tr>
-          @if (listaDevedores.devedorAbertoId === ul.id) {
-            <tr class="faturas-row">
-              <td colspan="6">
-                <table class="faturas-table">
-                  <thead>
-                    <tr>
-                      <th>CÓDIGO</th>
-                      <th>VENCIMENTO</th>
-                      <th>VALOR</th>
-                      <th>BOLETO</th>
-                      <th>PIX</th>
-                      <th>LINK</th>
-                    </tr>
-                  </thead>
+        </thead>
 
-                  @for (fatura of ul.faturas; track $index) {
-                    <div class="fatura">
-                      <span>{{ fatura.codigo }}</span>
-                      <span>{{ fatura.vencimento }}</span>
-
-                      <strong>
-                        <small>R$</small>
-                        {{ fatura.valor }}
-                      </strong>
-
-                      <button type="button" (click)="copy(fatura.codigoBarras)">
-                        CB
-                        <svg lucideCopy></svg>
-                      </button>
-
-                      <button type="button" (click)="copy(fatura.codigoPix)">
-                        PIX
-                        <svg lucideCopy></svg>
-                      </button>
-
-                      <button type="button" (click)="copy(fatura.linkFatura)">
-                        LINK
-                        <svg lucideCopy></svg>
-                      </button>
-
-                      <td>
-                        <span class="status atrasado" [class.paga]="fatura.status === 'paga'">{{ fatura.status }}</span>
-                      </td>
-                    </div>
+        <tbody>
+          @for (ul of svc.ultimosDevedores(); track ul.id) {
+            <tr class="devedor-row">
+              <td>
+                <div class="cliente">
+                  <strong>{{ ul.nome }}</strong>
+                </div>
+              </td>
+              <td>{{ ul.cpf }}</td>
+              <td>
+                <strong class="valor">R$ {{ svc.toMoney(ul.totalDevedor) }}</strong>
+              </td>
+              <td>
+                <span class="faturas">{{ ul.faturas.length }}</span>
+              </td>
+              <td>{{ svc.ultimoVencimento(ul) }}</td>
+              <td>
+                <span
+                  class="status atrasado"
+                  [class.paga]="svc.checkStatusDevedor(ul.faturas) === 'Em Dia'"
+                >
+                  {{ svc.checkStatusDevedor(ul.faturas) }}
+                </span>
+              </td>
+              <td>
+                <button class="btn-chevron" type="button" (click)="svc.toggleDetalhes(ul.id)">
+                  @if (svc.devedorAbertoId() !== ul.id) {
+                    <svg lucideChevronDown></svg>
+                  } @else {
+                    <svg lucideChevronUp></svg>
                   }
-                </table>
+                </button>
               </td>
             </tr>
+
+            @if (svc.devedorAbertoId() === ul.id) {
+              <tr class="faturas-row">
+                <td colspan="7">
+                  <div class="faturas-cont">
+                    <div class="faturas-header">
+                      <span>CÓDIGO</span>
+                      <span>VENCIMENTO</span>
+                      <span>VALOR</span>
+                      <span>BOLETO</span>
+                      <span>PIX</span>
+                      <span>LINK</span>
+                      <span>STATUS</span>
+                    </div>
+
+                    @for (fatura of ul.faturas; track $index) {
+                      <div class="fatura">
+                        <span>{{ fatura.codigo }}</span>
+                        <span>{{ fatura.vencimento }}</span>
+                        <strong><small>R$</small> {{ fatura.valor }}</strong>
+
+                        <button type="button" (click)="svc.copy(fatura.codigoBarras)">
+                          CB <svg lucideCopy></svg>
+                        </button>
+                        <button type="button" (click)="svc.copy(fatura.codigoPix)">
+                          PIX <svg lucideCopy></svg>
+                        </button>
+                        <button type="button" (click)="svc.copy(fatura.linkFatura)">
+                          LINK <svg lucideCopy></svg>
+                        </button>
+
+                        <span class="status atrasado" [class.paga]="fatura.status === 'paga'">
+                          {{ fatura.status }}
+                        </span>
+                      </div>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
           }
-        }
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

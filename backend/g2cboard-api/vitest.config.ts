@@ -11,3 +11,5 @@ export default defineConfig({
     include: ['**/*.spec.ts'],
   },
 });
+
+//@Cron('0 8 * * *', { timeZone: 'America/Sao_Paulo' })

@@ -1,4 +1,6 @@
 <div class="content">
+  @let r = svc.resumo();
+
   <div class="stats">
     <div class="stat-card">
       <div class="stat-icon">
@@ -6,9 +8,8 @@
       </div>
       <div>
         <span>Total devedores</span>
-        <strong>{{devedores.length}}</strong>
+        <strong>{{ r?.totalDevedores?.atual + 1 ?? 0 }}</strong>
       </div>
-      <small>+1,4%</small>
     </div>
 
     <div class="stat-card">
@@ -17,9 +18,8 @@
       </div>
       <div>
         <span>Total devedor</span>
-        <strong>{{toMoney(Number(totalDevedor.toFixed(2)))}}</strong>
+        <strong>R$ {{ svc.toMoney(r?.totalDevedor?.atual ?? 0) }}</strong>
       </div>
-      <small>+1,2%</small>
     </div>
 
     <div class="stat-card">
@@ -28,9 +28,8 @@
       </div>
       <div>
         <span>Total recebido</span>
-        <strong>{{ toMoney(totalRecebido) }}</strong>
+        <strong>R$ {{ svc.toMoney(r?.totalRecebido?.atual ?? 0) }}</strong>
       </div>
-      <small>+0,7%</small>
     </div>
   </div>
 
@@ -38,46 +37,55 @@
     <table>
       <thead>
         <tr>
-          <th>CLIENTE</th>
+          <th class="sortable" (click)="svc.ordenarPor('nome')">
+            CLIENTE
+            {{ svc.ordem().campo === 'nome' ? (svc.ordem().dir === 'asc' ? '↑' : '↓') : '' }}
+          </th>
           <th>CPF</th>
-          <th>VALOR DEVIDO</th>
+          <th class="sortable" (click)="svc.ordenarPor('valor')">
+            VALOR DEVIDO
+            {{ svc.ordem().campo === 'valor' ? (svc.ordem().dir === 'asc' ? '↑' : '↓') : '' }}
+          </th>
           <th>FATURAS</th>
-          <th>ÚLTIMO VENCIMENTO</th>
-          <th>STATUS</th>
+          <th class="sortable" (click)="svc.ordenarPor('vencimento')">
+            ÚLTIMO VENCIMENTO
+            {{ svc.ordem().campo === 'vencimento' ? (svc.ordem().dir === 'asc' ? '↑' : '↓') : '' }}
+          </th>
+          <th class="sortable" (click)="svc.ordenarPor('status')">
+            STATUS
+            {{ svc.ordem().campo === 'status' ? (svc.ordem().dir === 'asc' ? '↑' : '↓') : '' }}
+          </th>
           <th></th>
         </tr>
       </thead>
 
       <tbody>
-        @for (devedor of devedoresPaginados; track devedor.cpf) {
+        @for (devedor of svc.devedoresPaginados(); track devedor.id) {
           <tr class="devedor-row">
             <td>
               <div class="cliente">
-                <div>
-                  <strong>{{ devedor.nome }}</strong>
-                </div>
+                <strong>{{ devedor.nome }}</strong>
               </div>
             </td>
-
             <td>{{ devedor.cpf }}</td>
-
             <td>
-              <strong class="valor">R$ {{ toMoney(Number(devedor.totalDevedor).toFixed(2)) }}</strong>
+              <strong class="valor">R$ {{ svc.toMoney(devedor.totalDevedor) }}</strong>
             </td>
-
             <td>
               <span class="faturas">{{ devedor.faturas.length }}</span>
             </td>
-
-            <td>{{ devedor.faturas[devedor.faturas.length - 1].vencimento }}</td>
-
+            <td>{{ svc.ultimoVencimento(devedor) }}</td>
             <td>
-              <span class="status atrasado" [class.paga]="checkStatusDevedor(devedor.faturas) === 'Em Dia'">{{ checkStatusDevedor(devedor.faturas) }}</span>
+              <span
+                class="status atrasado"
+                [class.paga]="svc.checkStatusDevedor(devedor.faturas) === 'Em Dia'"
+              >
+                {{ svc.checkStatusDevedor(devedor.faturas) }}
+              </span>
             </td>
-
             <td>
-              <button class="btn-chevron" type="button" (click)="openDetalhes(devedor.id)">
-                @if (devedorAbertoId !== devedor.id) {
+              <button class="btn-chevron" type="button" (click)="svc.toggleDetalhes(devedor.id)">
+                @if (svc.devedorAbertoId() !== devedor.id) {
                   <svg lucideChevronDown></svg>
                 } @else {
                   <svg lucideChevronUp></svg>
@@ -86,7 +94,7 @@
             </td>
           </tr>
 
-          @if (devedorAbertoId === devedor.id) {
+          @if (svc.devedorAbertoId() === devedor.id) {
             <tr class="faturas-row">
               <td colspan="7">
                 <div class="faturas-cont">
@@ -104,30 +112,21 @@
                     <div class="fatura">
                       <span>{{ fatura.codigo }}</span>
                       <span>{{ fatura.vencimento }}</span>
+                      <strong><small>R$</small> {{ fatura.valor }}</strong>
 
-                      <strong>
-                        <small>R$</small>
-                        {{ fatura.valor }}
-                      </strong>
-
-                      <button type="button" (click)="copy(fatura.codigoBarras)">
-                        CB
-                        <svg lucideCopy></svg>
+                      <button type="button" (click)="svc.copy(fatura.codigoBarras)">
+                        CB <svg lucideCopy></svg>
+                      </button>
+                      <button type="button" (click)="svc.copy(fatura.codigoPix)">
+                        PIX <svg lucideCopy></svg>
+                      </button>
+                      <button type="button" (click)="svc.copy(fatura.linkFatura)">
+                        LINK <svg lucideCopy></svg>
                       </button>
 
-                      <button type="button" (click)="copy(fatura.codigoPix)">
-                        PIX
-                        <svg lucideCopy></svg>
-                      </button>
-
-                      <button type="button" (click)="copy(fatura.linkFatura)">
-                        LINK
-                        <svg lucideCopy></svg>
-                      </button>
-
-                      <td>
-                        <span class="status atrasado" [class.paga]="fatura.status === 'paga'">{{ fatura.status }}</span>
-                      </td>
+                      <span class="status atrasado" [class.paga]="fatura.status === 'paga'">
+                        {{ fatura.status }}
+                      </span>
                     </div>
                   }
                 </div>
@@ -144,17 +143,21 @@
   </div>
 
   <div class="paginacao">
-    <span> Página {{ paginaAtual }} de {{ totalPaginas }} ({{ devedores.length }} devedores) </span>
+    <span>
+      Página {{ svc.paginaAtual() }} de {{ svc.totalPaginas() }} ({{
+        svc.devedoresFiltrados().length
+      }}
+      devedores)
+    </span>
 
     <div class="paginacao-botoes">
-      <button type="button" (click)="paginaAnterior()" [disabled]="paginaAtual === 1">
+      <button type="button" (click)="svc.paginaAnterior()" [disabled]="svc.paginaAtual() === 1">
         Anterior
       </button>
-
       <button
         type="button"
-        (click)="proximaPagina()"
-        [disabled]="paginaAtual >= totalPaginas || totalPaginas === 0"
+        (click)="svc.proximaPagina()"
+        [disabled]="svc.paginaAtual() >= svc.totalPaginas() || svc.totalPaginas() === 0"
       >
         Próxima
       </button>

@@ -1,0 +1,17 @@
+<div class="grupo" role="radiogroup" [attr.aria-label]="rotulo() || null">
+  @if (rotulo()) {
+    <span class="rotulo">{{ rotulo() }}</span>
+  }
+  @for (o of opcoes(); track o.valor) {
+    <button
+      type="button"
+      class="chip"
+      role="radio"
+      [class.ativo]="o.valor === valor()"
+      [attr.aria-checked]="o.valor === valor()"
+      (click)="mudou.emit(o.valor)"
+    >
+      {{ o.rotulo }}
+    </button>
+  }
+</div>

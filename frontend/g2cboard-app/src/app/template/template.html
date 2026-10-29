@@ -47,7 +47,11 @@
         <span class="titulo">{{ getTitulo() }}</span>
       </div>
       <div class="input-search">
-        <input />
+        <input
+          placeholder="Buscar por nome ou CPF"
+          [value]="svc.busca()"
+          (input)="onBusca($any($event.target).value)"
+        />
         <mat-icon>search</mat-icon>
       </div>
     </header>
