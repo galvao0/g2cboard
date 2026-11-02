@@ -1,5 +1,7 @@
+import { Component, inject } from '@angular/core';
+import { DevedoresService } from '../service/devedores/devedores-service';
 import {
-  LucideArrowUpDown,
+  LucideArrowUp,
   LucideChevronDown,
   LucideChevronUp,
   LucideCopy,
@@ -7,8 +9,15 @@ import {
   LucideTrendingUp,
   LucideUsers,
 } from '@lucide/angular';
-import { DevedoresService } from '../service/devedores/devedores-service';
-import { Component, inject } from '@angular/core';
+import { CurrencyPipe, DatePipe } from '@angular/common';
+
+export interface devedorResp {
+  id: string;
+  cpf: string;
+  nome: string;
+  totalDevedor: string;
+  faturas: any[];
+}
 
 @Component({
   selector: 'app-listadevedores',
@@ -21,9 +30,11 @@ import { Component, inject } from '@angular/core';
     LucideUsers,
     LucideTrendingDown,
     LucideTrendingUp,
-    LucideArrowUpDown,
+    LucideArrowUp,
+    DatePipe,
+    CurrencyPipe,
   ],
 })
 export class ListaDevedores {
-  svc = inject(DevedoresService);
+  devService = inject(DevedoresService);
 }

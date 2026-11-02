@@ -1,6 +1,8 @@
+import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
+  LucideArrowDownFromLine,
   LucideBanknoteArrowDown,
   LucideChevronDown,
   LucideChevronUp,
@@ -11,13 +13,13 @@ import {
 } from '@lucide/angular';
 import { HighchartsChartComponent } from 'highcharts-angular';
 import { DevedoresService } from '../service/devedores/devedores-service';
-import { FiltroChips } from '../filtro-chips/filtro-chips';
 
 @Component({
   selector: 'app-board',
   templateUrl: './board.html',
   styleUrl: './board.scss',
   imports: [
+    LucideArrowDownFromLine,
     LucideUsers,
     LucideTrendingDown,
     LucideTrendingUp,
@@ -26,14 +28,17 @@ import { FiltroChips } from '../filtro-chips/filtro-chips';
     LucideChevronDown,
     LucideChevronUp,
     HighchartsChartComponent,
-    FiltroChips,
+    DatePipe,
+    CurrencyPipe,
+    DecimalPipe,
   ],
 })
 export class Board {
+  openFaturas!: boolean;
+  devService = inject(DevedoresService);
   private router = inject(Router);
-  svc = inject(DevedoresService);
 
-  private baseOptions: Highcharts.Options = {
+  private style: Highcharts.Options = {
     chart: {
       type: 'areaspline',
       height: 320,
@@ -48,7 +53,11 @@ export class Board {
       text: 'Dívidas',
       align: 'left',
       margin: 24,
-      style: { color: '#f0f2f5', fontSize: '18px', fontWeight: '600' },
+      style: {
+        color: '#f0f2f5',
+        fontSize: '18px',
+        fontWeight: '600',
+      },
     },
 
     subtitle: {
@@ -61,8 +70,14 @@ export class Board {
       lineColor: '#292d34',
       tickColor: 'transparent',
       tickLength: 0,
-      labels: { style: { color: '#9298a5', fontSize: '11px' } },
-      crosshair: { color: 'rgba(188, 242, 39, 0.15)', width: 1, dashStyle: 'Dash' },
+      labels: {
+        style: { color: '#9298a5', fontSize: '11px' },
+      },
+      crosshair: {
+        color: 'rgba(188, 242, 39, 0.15)',
+        width: 1,
+        dashStyle: 'Dash',
+      },
     },
 
     yAxis: {
@@ -71,12 +86,17 @@ export class Board {
       gridLineDashStyle: 'Dash',
       lineWidth: 0,
       tickWidth: 0,
-      labels: { style: { color: '#9298a5', fontSize: '11px' } },
+      labels: {
+        style: { color: '#9298a5', fontSize: '11px' },
+      },
     },
 
     legend: {
       enabled: true,
-      itemStyle: { color: '#9298a5', fontWeight: '400' },
+      itemStyle: {
+        color: '#9298a5',
+        fontWeight: '400',
+      },
       itemHoverStyle: { color: '#f0f2f5' },
     },
 
@@ -101,7 +121,13 @@ export class Board {
           radius: 4,
           lineColor: '#101216',
           lineWidth: 2,
-          states: { hover: { enabled: true, radius: 6, lineWidth: 2 } },
+          states: {
+            hover: {
+              enabled: true,
+              radius: 6,
+              lineWidth: 2,
+            },
+          },
         },
         states: { hover: { lineWidth: 3 } },
       },
@@ -111,21 +137,20 @@ export class Board {
     accessibility: { enabled: false },
   };
 
-  // Recalcula sozinho quando os dados ou o período mudam
-  chartOptions = computed<Highcharts.Options>(() => {
-    const meses = this.svc.meses();
+  grafico = computed<Highcharts.Options>(() => {
+    const data = this.devService.grafico();
 
     return {
-      ...this.baseOptions,
+      ...this.style,
       xAxis: {
-        ...(this.baseOptions.xAxis as Highcharts.XAxisOptions),
-        categories: meses.map((m) => m.rotulo),
+        ...(this.style.xAxis as Highcharts.XAxisOptions),
+        categories: data.mes,
       },
       series: [
         {
           type: 'areaspline',
-          name: 'Em aberto',
-          data: meses.map((m) => m.totalDevedor),
+          name: 'Recebido',
+          data: data.rec,
           color: '#bcf227',
           fillColor: {
             linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
@@ -137,8 +162,8 @@ export class Board {
         },
         {
           type: 'areaspline',
-          name: 'Recebido',
-          data: meses.map((m) => m.totalRecebido),
+          name: 'Em atraso',
+          data: data.dev,
           color: '#5aa9ff',
           fillColor: {
             linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
@@ -151,6 +176,10 @@ export class Board {
       ],
     };
   });
+
+  openDetalhes() {
+    this.openFaturas = !this.openFaturas;
+  }
 
   open() {
     this.router.navigateByUrl('/listadevedores');

@@ -16,6 +16,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(),
     provideHighcharts(),
-    provideAppInitializer(() => inject(DevedoresService).carregar()),
+    provideAppInitializer(() => inject(DevedoresService).get()),
   ],
 };

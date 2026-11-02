@@ -1,13 +1,13 @@
 .content {
   padding: 28px;
   color: var(--text-color);
+  box-sizing: border-box;
 }
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
-
   margin-bottom: 18px;
 }
 
@@ -15,27 +15,20 @@
   display: flex;
   align-items: center;
   gap: 14px;
-
   position: relative;
-
   padding: 18px;
-
   border: 1px solid var(--border-color);
   border-radius: 9px;
-
   background: var(--sidebar-bg);
 
   .stat-icon {
     width: 40px;
     height: 40px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     border: 1px solid #33373f;
     border-radius: 8px;
-
     color: var(--accent-color);
 
     svg {
@@ -45,11 +38,8 @@
 
   span {
     display: block;
-
     margin-bottom: 5px;
-
     color: var(--font-color);
-
     font-size: 0.7rem;
   }
 
@@ -61,10 +51,8 @@
 
 .table-box {
   overflow: hidden;
-
   border: 1px solid var(--border-color);
   border-radius: 10px;
-
   background: var(--sidebar-bg);
 }
 
@@ -72,14 +60,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   padding: 20px;
-
   border-bottom: 1px solid var(--border-color);
 
   h2 {
     margin: 4px 0 0;
-
     font-size: 0.95rem;
     font-weight: 600;
   }
@@ -94,14 +79,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
-
   width: 220px;
-
   padding: 8px 10px;
-
   border: 1px solid var(--border-color);
   border-radius: 7px;
-
   background: #15171b;
 
   svg {
@@ -111,13 +92,10 @@
 
   input {
     width: 100%;
-
     border: none;
     outline: none;
-
     background: transparent;
     color: var(--text-color);
-
     font-size: 0.72rem;
 
     &::placeholder {
@@ -130,18 +108,12 @@
   display: flex;
   align-items: center;
   gap: 6px;
-
   padding: 8px 11px;
-
   border: 1px solid var(--border-color);
   border-radius: 7px;
-
   background: transparent;
-
   color: var(--font-color);
-
   font-size: 0.72rem;
-
   cursor: pointer;
 
   svg {
@@ -156,37 +128,35 @@
 
 table {
   width: 100%;
-
   border-collapse: collapse;
 }
 
 th {
   padding: 12px 20px;
-
   color: #626875;
-
   font-size: 0.62rem;
   font-weight: 600;
-
   text-align: left;
-}
 
-th.sortable {
-  cursor: pointer;
-  user-select: none;
+  &.filtro {
+    cursor: pointer;
+    user-select: none;
+  }
 
-  &:hover {
-    color: var(--text-color);
+  &.filtro svg {
+    width: 14px;
+    vertical-align: middle;
+
+    &.down {
+      transform: rotate(180deg);
+    }
   }
 }
 
 td {
   padding: 15px 20px;
-
   border-top: 1px solid var(--border-color);
-
   color: var(--font-color);
-
   font-size: 0.75rem;
 }
 
@@ -201,9 +171,7 @@ tr:hover td {
 
   strong {
     display: block;
-
     color: var(--text-color);
-
     font-size: 0.75rem;
   }
 }
@@ -214,31 +182,22 @@ tr:hover td {
 
 .faturas {
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
-
   width: 23px;
   height: 23px;
-
   border: 1px solid #3d4b27;
   border-radius: 50%;
-
   background: rgba(188, 242, 39, 0.08);
-
   color: var(--accent-color);
-
   font-size: 0.65rem;
   font-weight: 700;
 }
 
 .status {
   display: inline-flex;
-
   padding: 5px 8px;
-
   border-radius: 5px;
-
   font-size: 0.62rem;
   font-weight: 600;
 }
@@ -248,24 +207,16 @@ tr:hover td {
   color: #e66b6b;
 }
 
-.pendente {
-  background: rgba(220, 180, 70, 0.08);
-  color: #d8b85c;
-}
-
-.recebido {
+.dia {
   background: rgba(188, 242, 39, 0.08);
   color: var(--accent-color);
 }
 
 .btn-chevron {
   display: flex;
-
   border: none;
   background: transparent;
-
   color: #717887;
-
   cursor: pointer;
 
   svg {
@@ -292,56 +243,32 @@ tr:hover td {
 
 .faturas-cont {
   margin: 0 20px 12px;
-
   overflow: hidden;
-
   border: 1px solid var(--border-color);
   border-radius: 7px;
-
   background: #15171b;
-}
-
-.paga {
-  color: #1faf02;
-  background-color: #1faf023f;
-  line-height: 1.1;
 }
 
 .faturas-header,
 .fatura {
   display: grid;
-  grid-template-columns:
-    1.5fr
-    1.2fr
-    1fr
-    0.7fr
-    0.7fr
-    0.7fr
-    0.7fr;
-
+  grid-template-columns: 1.5fr 1.2fr 1fr 0.9fr 0.7fr 0.7fr 0.7fr;
   align-items: center;
 }
 
 .faturas-header {
   padding: 10px 15px;
-
   border-bottom: 1px solid var(--border-color);
-
   color: #626875;
-
   font-size: 0.6rem;
   font-weight: 600;
 }
 
 .fatura {
   min-height: 44px;
-
   padding: 0 15px;
-
   border-bottom: 1px solid #22252b;
-
   color: var(--font-color);
-
   font-size: 0.7rem;
 
   &:last-child {
@@ -361,18 +288,12 @@ tr:hover td {
     display: flex;
     align-items: center;
     gap: 5px;
-
     width: fit-content;
-
     padding: 0;
-
     border: none;
     background: none;
-
     color: var(--font-color);
-
     font-size: 0.68rem;
-
     cursor: pointer;
 
     svg {
@@ -383,6 +304,21 @@ tr:hover td {
     &:hover {
       color: var(--accent-color);
     }
+  }
+}
+
+.fatura-status {
+  width: fit-content;
+  font-size: 0.62rem;
+  font-weight: 500;
+  opacity: 0.8;
+
+  &.paga {
+    color: var(--accent-color);
+  }
+
+  &.devendo {
+    color: #e66b6b;
   }
 }
 
@@ -401,7 +337,7 @@ tr:hover td {
 }
 
 @media (max-width: 650px) {
-  .board {
+  .content {
     padding: 16px;
   }
 

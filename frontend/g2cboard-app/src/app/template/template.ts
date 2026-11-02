@@ -23,7 +23,7 @@ import { DevedoresService } from '../service/devedores/devedores-service';
   ],
 })
 export class Template {
-  svc = inject(DevedoresService);
+  devService = inject(DevedoresService);
   private router = inject(Router);
 
   getTitulo() {
@@ -32,10 +32,10 @@ export class Template {
     return '';
   }
 
-  onBusca(valor: string) {
-    this.svc.setBusca(valor);
+  search(valor: string) {
+    this.devService.setDevPesq(valor);
     if (valor && !this.router.url.startsWith('/listadevedores')) {
-      this.router.navigateByUrl('/listadevedores'); // busca na dashboard leva para a lista
+      this.router.navigateByUrl('/listadevedores');
     }
   }
 }

@@ -2,7 +2,10 @@
   <mat-sidenav #sidenav opened mode="side" class="sidebar">
     <div class="header-menu">
       <div class="logo">
-        <img class="logo-img" src="logo.png" />
+        <img
+          class="logo-img"
+          src="https://g2cadm.com.br/wp-content/uploads/2025/02/g2c-1-1-1-1.jpg"
+        />
         <span class="logo-nome">G2cBoard</span>
       </div>
       <button class="btn-refresh">
@@ -49,13 +52,12 @@
       <div class="input-search">
         <input
           placeholder="Buscar por nome ou CPF"
-          [value]="svc.busca()"
-          (input)="onBusca($any($event.target).value)"
+          [value]="devService.devPesq()"
+          (input)="search($any($event.target).value)"
         />
         <mat-icon>search</mat-icon>
       </div>
     </header>
-
     <main class="pagina">
       <router-outlet></router-outlet>
     </main>

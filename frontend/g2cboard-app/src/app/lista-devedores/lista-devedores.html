@@ -1,6 +1,4 @@
 <div class="content">
-  @let r = svc.resumo();
-
   <div class="stats">
     <div class="stat-card">
       <div class="stat-icon">
@@ -8,7 +6,7 @@
       </div>
       <div>
         <span>Total devedores</span>
-        <strong>{{ r?.totalDevedores?.atual + 1 ?? 0 }}</strong>
+        <strong>{{ devService.tDev() }}</strong>
       </div>
     </div>
 
@@ -18,7 +16,17 @@
       </div>
       <div>
         <span>Total devedor</span>
-        <strong>R$ {{ svc.toMoney(r?.totalDevedor?.atual ?? 0) }}</strong>
+        <strong>{{ devService.vDev() | currency: 'BRL' : 'symbol' : '1.2-2' }}</strong>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <svg lucideTrendingUp></svg>
+      </div>
+      <div>
+        <span>Total Em Dia</span>
+        <strong>{{ devService.tDevDia() }}</strong>
       </div>
     </div>
 
@@ -28,7 +36,7 @@
       </div>
       <div>
         <span>Total recebido</span>
-        <strong>R$ {{ svc.toMoney(r?.totalRecebido?.atual ?? 0) }}</strong>
+        <strong>{{ devService.vDia() | currency: 'BRL' : 'symbol' : '1.2-2' }}</strong>
       </div>
     </div>
   </div>
@@ -37,55 +45,76 @@
     <table>
       <thead>
         <tr>
-          <th class="sortable" (click)="svc.ordenarPor('nome')">
+          <th (click)="devService.filtrar('nome')" class="filtro">
             CLIENTE
-            {{ svc.ordem().campo === 'nome' ? (svc.ordem().dir === 'asc' ? '↑' : '↓') : '' }}
+            @if (devService.filtro() === 'nome') {
+              <svg lucideArrowUp [class.down]="devService.ordem() === 'desc'"></svg>
+            }
           </th>
           <th>CPF</th>
-          <th class="sortable" (click)="svc.ordenarPor('valor')">
+          <th (click)="devService.filtrar('v')" class="filtro">
             VALOR DEVIDO
-            {{ svc.ordem().campo === 'valor' ? (svc.ordem().dir === 'asc' ? '↑' : '↓') : '' }}
+            @if (devService.filtro() === 'v') {
+              <svg lucideArrowUp [class.down]="devService.ordem() === 'desc'"></svg>
+            }
           </th>
-          <th>FATURAS</th>
-          <th class="sortable" (click)="svc.ordenarPor('vencimento')">
+          <th class="filtro" (click)="devService.filtrar('n')">
+            FATURAS
+            @if (devService.filtro() === 'n') {
+              <svg lucideArrowUp [class.down]="devService.ordem() === 'desc'"></svg>
+            }
+          </th>
+          <th (click)="devService.filtrar('ven')" class="filtro">
             ÚLTIMO VENCIMENTO
-            {{ svc.ordem().campo === 'vencimento' ? (svc.ordem().dir === 'asc' ? '↑' : '↓') : '' }}
+            @if (devService.filtro() === 'ven') {
+              <svg lucideArrowUp [class.down]="devService.ordem() === 'desc'"></svg>
+            }
           </th>
-          <th class="sortable" (click)="svc.ordenarPor('status')">
-            STATUS
-            {{ svc.ordem().campo === 'status' ? (svc.ordem().dir === 'asc' ? '↑' : '↓') : '' }}
-          </th>
+          <th>STATUS</th>
           <th></th>
         </tr>
       </thead>
 
       <tbody>
-        @for (devedor of svc.devedoresPaginados(); track devedor.id) {
+        @for (devedor of devService.devDiv(); track devedor.cpf) {
           <tr class="devedor-row">
             <td>
               <div class="cliente">
-                <strong>{{ devedor.nome }}</strong>
+                <div>
+                  <strong>{{ devedor.nome }}</strong>
+                </div>
               </div>
             </td>
+
             <td>{{ devedor.cpf }}</td>
+
             <td>
-              <strong class="valor">R$ {{ svc.toMoney(devedor.totalDevedor) }}</strong>
+              <strong class="valor">R$ {{ devedor.totalDevedor }}</strong>
             </td>
+
             <td>
               <span class="faturas">{{ devedor.faturas.length }}</span>
             </td>
-            <td>{{ svc.ultimoVencimento(devedor) }}</td>
+
             <td>
-              <span
-                class="status atrasado"
-                [class.paga]="svc.checkStatusDevedor(devedor.faturas) === 'Em Dia'"
-              >
-                {{ svc.checkStatusDevedor(devedor.faturas) }}
-              </span>
+              @if (devedor.faturas.length > 0) {
+                {{ devService.ul(devedor) | date: 'dd/MM/yyyy' }}
+              } @else {
+                -
+              }
             </td>
+
             <td>
-              <button class="btn-chevron" type="button" (click)="svc.toggleDetalhes(devedor.id)">
-                @if (svc.devedorAbertoId() !== devedor.id) {
+              @if (devedor.status === 'em dia') {
+                <span class="status dia">Em Dia</span>
+              } @else {
+                <span class="status atrasado">Atrasado</span>
+              }
+            </td>
+
+            <td>
+              <button class="btn-chevron" type="button" (click)="devService.exp(devedor.id)">
+                @if (devService.devOpId() !== devedor.id) {
                   <svg lucideChevronDown></svg>
                 } @else {
                   <svg lucideChevronUp></svg>
@@ -94,7 +123,7 @@
             </td>
           </tr>
 
-          @if (svc.devedorAbertoId() === devedor.id) {
+          @if (devService.devOpId() === devedor.id) {
             <tr class="faturas-row">
               <td colspan="7">
                 <div class="faturas-cont">
@@ -102,31 +131,44 @@
                     <span>CÓDIGO</span>
                     <span>VENCIMENTO</span>
                     <span>VALOR</span>
+                    <span>STATUS</span>
                     <span>BOLETO</span>
                     <span>PIX</span>
                     <span>LINK</span>
-                    <span>STATUS</span>
                   </div>
 
                   @for (fatura of devedor.faturas; track $index) {
                     <div class="fatura">
                       <span>{{ fatura.codigo }}</span>
                       <span>{{ fatura.vencimento }}</span>
-                      <strong><small>R$</small> {{ fatura.valor }}</strong>
 
-                      <button type="button" (click)="svc.copy(fatura.codigoBarras)">
-                        CB <svg lucideCopy></svg>
-                      </button>
-                      <button type="button" (click)="svc.copy(fatura.codigoPix)">
-                        PIX <svg lucideCopy></svg>
-                      </button>
-                      <button type="button" (click)="svc.copy(fatura.linkFatura)">
-                        LINK <svg lucideCopy></svg>
-                      </button>
+                      <strong>
+                        <small>R$</small>
+                        {{ fatura.valor }}
+                      </strong>
 
-                      <span class="status atrasado" [class.paga]="fatura.status === 'paga'">
+                      <span
+                        class="fatura-status"
+                        [class.paga]="fatura.status.toLowerCase() === 'paga'"
+                        [class.devendo]="fatura.status.toLowerCase() !== 'paga'"
+                      >
                         {{ fatura.status }}
                       </span>
+
+                      <button type="button" (click)="devService.copy(fatura.codigoBarras)">
+                        CB
+                        <svg lucideCopy></svg>
+                      </button>
+
+                      <button type="button" (click)="devService.copy(fatura.codigoPix)">
+                        PIX
+                        <svg lucideCopy></svg>
+                      </button>
+
+                      <button type="button" (click)="devService.copy(fatura.linkFatura)">
+                        LINK
+                        <svg lucideCopy></svg>
+                      </button>
                     </div>
                   }
                 </div>
@@ -144,20 +186,21 @@
 
   <div class="paginacao">
     <span>
-      Página {{ svc.paginaAtual() }} de {{ svc.totalPaginas() }} ({{
-        svc.devedoresFiltrados().length
+      Página {{ devService.pAtual() }} de {{ devService.tPage() }} ({{
+        devService.devsFiltrado().length
       }}
       devedores)
     </span>
 
     <div class="paginacao-botoes">
-      <button type="button" (click)="svc.paginaAnterior()" [disabled]="svc.paginaAtual() === 1">
+      <button type="button" (click)="devService.back()" [disabled]="devService.pAtual() === 1">
         Anterior
       </button>
+
       <button
         type="button"
-        (click)="svc.proximaPagina()"
-        [disabled]="svc.paginaAtual() >= svc.totalPaginas() || svc.totalPaginas() === 0"
+        (click)="devService.next()"
+        [disabled]="devService.pAtual() >= devService.tPage() || devService.tPage() === 0"
       >
         Próxima
       </button>

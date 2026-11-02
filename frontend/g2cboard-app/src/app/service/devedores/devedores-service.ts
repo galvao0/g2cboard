@@ -1,382 +1,308 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {
-  CampoOrdem,
-  Devedor,
-  Fatura,
-  MesEstatistica,
-  Metrica,
-  Periodo,
-  StatusFiltro,
-} from '../../models/devedor';
+import { StatusDevedor } from './enum/status-devedor';
 
-const ROTULOS_MES = [
-  'Jan',
-  'Fev',
-  'Mar',
-  'Abr',
-  'Mai',
-  'Jun',
-  'Jul',
-  'Ago',
-  'Set',
-  'Out',
-  'Nov',
-  'Dez',
-];
+export interface Fatura {
+  codigo: string;
+  vencimento: string;
+  valor: number | string;
+  status: string;
+  codigoBarras: string;
+  codigoPix: string;
+  linkFatura: string;
+}
 
-const MESES_POR_PERIODO: Record<Periodo, number | null> = {
-  todos: null,
-  '1m': 1,
-  '3m': 3,
-  '6m': 6,
-  '12m': 12,
-};
+export interface Devedor {
+  id: string;
+  cpf: string;
+  nome: string;
+  totalDevedor: number;
+  faturas: Fatura[];
+  status: StatusDevedor;
+}
 
-const normalizar = (s: string) =>
-  s
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim();
-
-const parseData = (d: string) => {
-  const [dia, mes, ano] = d.split('/').map(Number);
-  return new Date(ano, mes - 1, dia).getTime();
-};
-
-const idxBR = (d: string) => {
-  const [, mes, ano] = d.split('/').map(Number);
-  return ano * 12 + (mes - 1);
-};
-const idxISO = (d: string) => {
-  const [ano, mes] = d.slice(0, 10).split('-').map(Number);
-  return ano * 12 + (mes - 1);
-};
-
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root',
+})
 export class DevedoresService {
   private http = inject(HttpClient);
+
   private url = 'http://localhost:3000/devedores';
 
   readonly devedores = signal<Devedor[]>([]);
-  readonly carregando = signal(false);
-  readonly busca = signal('');
-  readonly ordem = signal<{ campo: CampoOrdem; dir: 'asc' | 'desc' }>({
-    campo: 'vencimento',
-    dir: 'desc',
-  });
-  readonly paginaAtual = signal(1);
-  readonly itensPagina = 10;
-  readonly devedorAbertoId = signal<string | null>(null);
+  readonly pAtual = signal(1);
+  readonly qntdPage = 10;
+  readonly devOpId = signal<string | null>(null);
+  readonly devPesq = signal('');
+  readonly filtro = signal<'nome' | 'v' | 'ven' | 'n' | null>(null);
+  readonly ordem = signal<'asc' | 'desc'>('asc');
+  readonly p = signal<0 | 1 | 3 | 6 | 12>(1);
 
-  readonly periodo = signal<Periodo>('todos');
-  readonly statusFiltro = signal<StatusFiltro>('todos');
-
-  readonly opcoesPeriodo = [
-    { valor: 'todos', rotulo: 'Todo o período' },
-    { valor: '1m', rotulo: 'Este mês' },
-    { valor: '3m', rotulo: 'Últimos 3 meses' },
-    { valor: '6m', rotulo: 'Últimos 6 meses' },
-    { valor: '12m', rotulo: 'Últimos 12 meses' },
-  ];
-
-  readonly opcoesStatus = [
-    { valor: 'todos', rotulo: 'Todos' },
-    { valor: 'atraso', rotulo: 'Em atraso' },
-    { valor: 'dia', rotulo: 'Em dia' },
-  ];
-
-  private readonly anoAtual = new Date().getFullYear();
-  private readonly mesAtual = new Date().getMonth(); // 0..11
-  private readonly idxHoje = this.anoAtual * 12 + this.mesAtual;
-
-  carregar(): void {
-    this.carregando.set(true);
+  get(): void {
     this.http.get<Devedor[]>(this.url).subscribe({
       next: (data) => {
         this.devedores.set(Array.from(data));
-        this.carregando.set(false);
       },
       error: (err) => {
         console.error(err);
-        this.carregando.set(false);
       },
     });
   }
 
-  private readonly primeiroIdx = computed(() => {
-    let min = this.idxHoje;
-    for (const d of this.devedores())
-      for (const f of d.faturas) {
-        min = Math.min(min, idxBR(f.vencimento));
-        if (f.dataPagamento) min = Math.min(min, idxISO(f.dataPagamento));
-      }
-    return min;
-  });
+  readonly devsFiltrado = computed(() => {
+    const dev = this.devPesq()
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
 
-  readonly janela = computed(() => {
-    const n = MESES_POR_PERIODO[this.periodo()];
-    const fim = this.idxHoje;
-    const ini = n ? fim - n + 1 : this.primeiroIdx();
-    const ant = n ? { ini: ini - n, fim: ini - 1 } : null;
-    return { ini, fim, ant };
-  });
+    if (!dev) return this.devedores();
 
-  readonly rotuloComparacao = computed(() => {
-    const p = this.periodo();
-    if (p === 'todos') return 'sem comparação';
-    return p === '1m' ? 'vs. mês anterior' : 'vs. período anterior';
-  });
+    return this.devedores().filter((devedor) => {
+      const nome = devedor.nome
+        .toLocaleLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
 
-  private calcMes(idx: number): MesEstatistica {
-    let faturamento = 0;
-    let recebido = 0;
-    let emAberto = 0;
-    const cpfs = new Set<string>();
-
-    for (const d of this.devedores()) {
-      for (const f of d.faturas) {
-        const valor = Number(f.valor);
-        const venc = idxBR(f.vencimento);
-        const paga = f.status === 'paga';
-        const pago = f.dataPagamento ? idxISO(f.dataPagamento) : null;
-
-        if (venc === idx) faturamento += valor;
-        if (pago === idx) recebido += valor;
-
-        const abertoNoMes = venc <= idx && (paga ? pago !== null && pago > idx : true);
-        if (abertoNoMes) {
-          emAberto += valor;
-          cpfs.add(d.cpf);
-        }
-      }
-    }
-
-    return {
-      mes: (idx % 12) + 1,
-      rotulo: `${ROTULOS_MES[idx % 12]}/${String(Math.floor(idx / 12)).slice(2)}`,
-      faturamento,
-      totalRecebido: recebido,
-      totalDevedor: emAberto,
-      totalDevedores: cpfs.size,
-    };
-  }
-
-  readonly meses = computed<MesEstatistica[]>(() => {
-    const j = this.janela();
-    const n = Math.min(24, Math.max(3, j.fim - j.ini + 1));
-    return Array.from({ length: n }, (_, i) => this.calcMes(j.fim - n + 1 + i));
-  });
-
-  readonly resumo = computed(() => {
-    if (!this.devedores().length) return null;
-    const j = this.janela();
-
-    const fluxo = (ini: number, fim: number) => {
-      let fat = 0;
-      let rec = 0;
-      for (let i = ini; i <= fim; i++) {
-        const m = this.calcMes(i);
-        fat += m.faturamento;
-        rec += m.totalRecebido;
-      }
-      return { fat, rec };
-    };
-
-    const atualF = fluxo(j.ini, j.fim);
-    const antF = j.ant ? fluxo(j.ant.ini, j.ant.fim) : null;
-    const saldoAtual = this.calcMes(j.fim);
-    const saldoAnt = j.ant ? this.calcMes(j.ant.fim) : null;
-
-    const m = (atual: number, anterior: number | null | undefined): Metrica => ({
-      atual,
-      variacao: anterior != null && anterior > 0 ? ((atual - anterior) / anterior) * 100 : null,
-    });
-
-    return {
-      faturamento: m(atualF.fat, antF?.fat),
-      totalRecebido: m(atualF.rec, antF?.rec),
-      totalDevedor: m(saldoAtual.totalDevedor, saldoAnt?.totalDevedor),
-      totalDevedores: m(saldoAtual.totalDevedores, saldoAnt?.totalDevedores),
-    };
-  });
-
-  readonly resumoPeriodo = computed(() => {
-    const j = this.janela();
-    let recebido = 0;
-    let aberto = 0;
-    for (const d of this.devedores())
-      for (const f of d.faturas) {
-        const i = idxBR(f.vencimento);
-        if (i < j.ini || i > j.fim) continue;
-        if (f.status === 'paga') recebido += Number(f.valor);
-        else aberto += Number(f.valor);
-      }
-    const total = recebido + aberto;
-    return {
-      recebido,
-      aberto,
-      pctRecebido: total > 0 ? (recebido / total) * 100 : 0,
-      pctAberto: total > 0 ? (aberto / total) * 100 : 0,
-    };
-  });
-
-  ultimoVencimento(d: Devedor): string {
-    return d.faturas.reduce(
-      (a: string, f: Fatura) => (parseData(f.vencimento) > parseData(a) ? f.vencimento : a),
-      d.faturas[0].vencimento,
-    );
-  }
-
-  checkStatusDevedor(faturas: { status: string }[]): 'Em Dia' | 'Em Atraso' {
-    return faturas.every((f) => f.status === 'paga') ? 'Em Dia' : 'Em Atraso';
-  }
-
-  toMoney(v: number | string): string {
-    return new Intl.NumberFormat('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(Number(v));
-  }
-
-  toPercent(v: number): string {
-    return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 }).format(v) + '%';
-  }
-
-  fmtVar(v: number | null | undefined): string {
-    if (v == null) return '—';
-    return (v > 0 ? '+' : '') + this.toPercent(v);
-  }
-
-  bom(v: number | null | undefined, invertido = false): boolean | null {
-    if (v == null) return null;
-    return invertido ? v <= 0 : v >= 0;
-  }
-
-  classeVar(v: number | null | undefined, invertido = false): string {
-    const b = this.bom(v, invertido);
-    return b === null ? '' : b ? 'positivo' : 'negativo';
-  }
-
-  readonly ultimosDevedores = computed(() =>
-    [...this.devedores()]
-      .filter((d) => d.faturas.length)
-      .sort((a, b) => parseData(this.ultimoVencimento(b)) - parseData(this.ultimoVencimento(a)))
-      .slice(0, 3),
-  );
-
-  readonly devedoresFiltrados = computed(() => {
-    const termo = normalizar(this.busca());
-    const termoCpf = termo.replace(/\D/g, '');
-    const j = this.janela();
-    const st = this.statusFiltro();
-
-    let lista = this.devedores().filter((d) => d.faturas.length);
-
-    lista = lista.filter((d) =>
-      d.faturas.some((f) => {
-        const i = idxBR(f.vencimento);
-        return i >= j.ini && i <= j.fim;
-      }),
-    );
-
-    if (st !== 'todos') {
-      lista = lista.filter(
-        (d) => (this.checkStatusDevedor(d.faturas) === 'Em Dia') === (st === 'dia'),
-      );
-    }
-
-    if (termo) {
-      lista = lista.filter(
-        (d) =>
-          normalizar(d.nome).includes(termo) ||
-          (termoCpf && d.cpf.replace(/\D/g, '').includes(termoCpf)),
-      );
-    }
-
-    const { campo, dir } = this.ordem();
-    const fator = dir === 'asc' ? 1 : -1;
-
-    return [...lista].sort((a, b) => {
-      switch (campo) {
-        case 'nome':
-          return a.nome.localeCompare(b.nome, 'pt-BR') * fator;
-        case 'valor':
-          return (Number(a.totalDevedor) - Number(b.totalDevedor)) * fator;
-        case 'vencimento':
-          return (
-            (parseData(this.ultimoVencimento(a)) - parseData(this.ultimoVencimento(b))) * fator
-          );
-        case 'status':
-          return (
-            this.checkStatusDevedor(a.faturas).localeCompare(this.checkStatusDevedor(b.faturas)) *
-            fator
-          );
-        default:
-          return 0;
-      }
+      return nome.includes(dev) || devedor.cpf.includes(dev);
     });
   });
 
-  readonly totalPaginas = computed(() =>
-    Math.ceil(this.devedoresFiltrados().length / this.itensPagina),
-  );
+  readonly tPage = computed(() => Math.ceil(this.devsFiltrado().length / this.qntdPage));
 
-  readonly devedoresPaginados = computed(() => {
-    const inicio = (this.paginaAtual() - 1) * this.itensPagina;
-    return this.devedoresFiltrados().slice(inicio, inicio + this.itensPagina);
+  ul(dev: Devedor): number | null {
+    const datas = dev.faturas
+      .map((f) => {
+        const [dia, mes, ano] = f.vencimento.split('/').map(Number);
+
+        return new Date(ano, mes - 1, dia).getTime();
+      })
+      .filter(Number.isFinite);
+
+    return datas.length ? Math.max(...datas) : null;
+  }
+
+  readonly devDiv = computed(() => {
+    const f = this.filtro();
+    const ordem = this.ordem();
+
+    const dados = [...this.devsFiltrado()];
+
+    if (f === 'nome') {
+      dados.sort((d1, d2) => d1.nome.localeCompare(d2.nome));
+    }
+
+    if (f === 'v') {
+      dados.sort((d1, d2) => d1.totalDevedor - d2.totalDevedor);
+    }
+
+    if (f === 'ven') {
+      dados.sort((d1, d2) => (this.ul(d1) ?? 0) - (this.ul(d2) ?? 0));
+    }
+
+    if (f === 'n') {
+      dados.sort((d1, d2) => d1.faturas.length - d2.faturas.length);
+    }
+
+    if (ordem === 'desc') dados.reverse();
+
+    const p = (this.pAtual() - 1) * this.qntdPage;
+
+    return dados.slice(p, p + this.qntdPage);
   });
 
-  private resetarLista() {
-    this.paginaAtual.set(1);
-    this.devedorAbertoId.set(null);
+  readonly tDev = computed(
+    () => this.devedores().filter((d) => d.status === StatusDevedor.EMATRASO).length,
+  );
+
+  readonly tDevDia = computed(
+    () => this.devedores().filter((d) => d.status === StatusDevedor.EMDIA).length,
+  );
+
+  private reset() {
+    this.pAtual.set(1);
+    this.devOpId.set(null);
   }
 
-  setBusca(valor: string) {
-    this.busca.set(valor);
-    this.resetarLista();
+  filtrar(f: 'nome' | 'v' | 'ven' | 'n') {
+    if (this.filtro() === f) {
+      this.ordem.update((o) => (o === 'asc' ? 'desc' : 'asc'));
+    } else {
+      this.filtro.set(f);
+      this.ordem.set('asc');
+    }
+
+    this.reset();
   }
 
-  setPeriodo(valor: string) {
-    this.periodo.set(valor as Periodo);
-    this.resetarLista();
-  }
-
-  setStatus(valor: string) {
-    this.statusFiltro.set(valor as StatusFiltro);
-    this.resetarLista();
-  }
-
-  ordenarPor(campo: CampoOrdem) {
-    const atual = this.ordem();
-    this.ordem.set(
-      atual.campo === campo
-        ? { campo, dir: atual.dir === 'asc' ? 'desc' : 'asc' }
-        : { campo, dir: campo === 'nome' || campo === 'status' ? 'asc' : 'desc' },
-    );
-    this.resetarLista();
-  }
-
-  paginaAnterior() {
-    if (this.paginaAtual() > 1) {
-      this.paginaAtual.update((p) => p - 1);
-      this.devedorAbertoId.set(null);
+  back() {
+    if (this.pAtual() > 1) {
+      this.pAtual.update((p) => p - 1);
+      this.devOpId.set(null);
     }
   }
 
-  proximaPagina() {
-    if (this.paginaAtual() < this.totalPaginas()) {
-      this.paginaAtual.update((p) => p + 1);
-      this.devedorAbertoId.set(null);
+  next() {
+    if (this.pAtual() < this.tPage()) {
+      this.pAtual.update((p) => p + 1);
+      this.devOpId.set(null);
     }
   }
 
-  toggleDetalhes(id: string) {
-    this.devedorAbertoId.update((atual) => (atual === id ? null : id));
+  exp(id: string) {
+    this.devOpId.update((at) => (at === id ? null : id));
   }
 
   copy(code: string) {
     navigator.clipboard.writeText(code);
   }
+
+  setDevPesq(valor: string) {
+    this.devPesq.set(valor);
+    this.reset();
+  }
+
+  readonly ulDevs = computed(() =>
+    [...this.devedores()].sort((d1, d2) => (this.ul(d2) ?? 0) - (this.ul(d1) ?? 0)).slice(0, 3),
+  );
+
+  readonly vDev = computed(() =>
+    this.devedores().reduce(
+      (t, dev) =>
+        t +
+        dev.faturas
+          .filter((f) => f.status.toLowerCase() === 'vencida')
+          .reduce((t, f) => t + Number(f.valor), 0),
+      0,
+    ),
+  );
+
+  readonly vDia = computed(() =>
+    this.devedores().reduce(
+      (t, dev) =>
+        t +
+        dev.faturas
+          .filter((f) => f.status.toLowerCase() === 'paga')
+          .reduce((t, f) => t + Number(f.valor), 0),
+      0,
+    ),
+  );
+
+  readonly grafico = computed(() => {
+    const h = new Date();
+    const anoAtual = h.getFullYear();
+    const mesAtual = h.getMonth();
+
+    const meses = Array.from({ length: mesAtual + 1 }, (_, i) => ({
+      nome: new Date(anoAtual, i, 1).toLocaleDateString('pt-BR', {
+        month: 'short',
+      }),
+      mes: i,
+      ano: anoAtual,
+    }));
+
+    return {
+      mes: meses.map((m) => m.nome),
+
+      rec: meses.map((m) =>
+        this.devedores().reduce(
+          (t, d) =>
+            t +
+            d.faturas
+              .filter((f) => {
+                const [_, mes, ano] = f.vencimento.split('/').map(Number);
+
+                return f.status.toLowerCase() === 'paga' && mes - 1 === m.mes && ano === m.ano;
+              })
+              .reduce((soma, f) => soma + Number(f.valor), 0),
+          0,
+        ),
+      ),
+
+      dev: meses.map((m) =>
+        this.devedores().reduce(
+          (total, d) =>
+            total +
+            d.faturas
+              .filter((f) => {
+                const [_, mes, ano] = f.vencimento.split('/').map(Number);
+
+                return f.status.toLowerCase() === 'vencida' && mes - 1 === m.mes && ano === m.ano;
+              })
+              .reduce((soma, f) => soma + Number(f.valor), 0),
+          0,
+        ),
+      ),
+    };
+  });
+
+  setP(v: 0 | 1 | 3 | 6 | 12) {
+    this.p.set(v);
+  }
+
+  private redFaturas(status: string, inicio: Date, fim: Date): number {
+    return this.devedores().reduce(
+      (t, dev) =>
+        t +
+        dev.faturas
+          .filter((f) => {
+            const [d, m, a] = f.vencimento.split('/').map(Number);
+            const data = new Date(a, m - 1, d);
+
+            return f.status.toLowerCase() === status && data >= inicio && data < fim;
+          })
+          .reduce((t, f) => t + Number(f.valor), 0),
+      0,
+    );
+  }
+
+  readonly calc = computed(() => {
+    const vp = this.p();
+    const h = new Date();
+
+    const variacao = (at: number, ant: number): number | null => {
+      if (ant === 0) return at === 0 ? 0 : null;
+
+      return ((at - ant) / ant) * 100;
+    };
+
+    if (vp === 0) {
+      return {
+        recebido: {
+          atual: this.vDia(),
+          anterior: 0,
+          variacao: null,
+        },
+        devedor: {
+          atual: this.vDev(),
+          anterior: 0,
+          variacao: null,
+        },
+      };
+    }
+
+    const inicio = new Date(h.getFullYear(), h.getMonth() - vp + 1, 1);
+    const fim = new Date(h.getFullYear(), h.getMonth() + 1, 1);
+
+    const inicioAnt = new Date(inicio.getFullYear(), inicio.getMonth() - vp, 1);
+    const fimAnt = inicio;
+
+    const res = this.redFaturas('paga', inicio, fim);
+    const resAnt = this.redFaturas('paga', inicioAnt, fimAnt);
+    const dev = this.redFaturas('vencida', inicio, fim);
+    const devAnt = this.redFaturas('vencida', inicioAnt, fimAnt);
+
+    return {
+      recebido: {
+        atual: res,
+        anterior: resAnt,
+        variacao: variacao(res, resAnt),
+      },
+      devedor: {
+        atual: dev,
+        anterior: devAnt,
+        variacao: variacao(dev, devAnt),
+      },
+    };
+  });
 }
