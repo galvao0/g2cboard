@@ -362,7 +362,7 @@ tr:hover td {
   }
 }
 
-.paginacao {
+.div {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -373,7 +373,7 @@ tr:hover td {
   font-size: 0.82rem;
 }
 
-.paginacao-botoes {
+.div-btns {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -409,12 +409,12 @@ tr:hover td {
 }
 
 @media (max-width: 600px) {
-  .paginacao {
+  .div {
     align-items: flex-start;
     flex-direction: column;
   }
 
-  .paginacao-botoes {
+  .div-btns {
     width: 100%;
 
     button {

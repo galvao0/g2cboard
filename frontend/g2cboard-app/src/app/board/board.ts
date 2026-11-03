@@ -1,5 +1,5 @@
 import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   LucideArrowDownFromLine,
@@ -33,7 +33,7 @@ import { DevedoresService } from '../service/devedores/devedores-service';
     DecimalPipe,
   ],
 })
-export class Board {
+export class Board implements OnInit {
   openFaturas!: boolean;
   devService = inject(DevedoresService);
   private router = inject(Router);
@@ -183,5 +183,15 @@ export class Board {
 
   open() {
     this.router.navigateByUrl('/listadevedores');
+  }
+
+  ngOnInit(): void {
+    this.devService.devedores().map((d) => {
+      d.faturas.map((f) => {
+        if(f.status === 'paga') {
+          console.log(d.nome)
+        }
+      })
+    })
   }
 }

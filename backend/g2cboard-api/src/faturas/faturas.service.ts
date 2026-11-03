@@ -25,10 +25,10 @@ export class FaturasService {
     @InjectRepository(FaturasEntity)
     private readonly faturasRepository: Repository<FaturasEntity>,
     @InjectRepository(DevedorEntity)
-    private readonly devedoresRepository: Repository<DevedorEntity>,
+    private readonly devedoresRepository: Repository<DevedorEntity>
   ) {}
 
-  private limite = new Bottleneck({
+  private l = new Bottleneck({
     reservoir: 50,
     reservoirRefreshAmount: 50,
     reservoirRefreshInterval: 60 * 1000,
@@ -43,8 +43,9 @@ export class FaturasService {
       senhaApi: this.configService.get<string>('API_PASS'),
     };
   }
-
+  i = 0
   private async buscarFatura(num: string) {
+    
     while (true) {
       try {
         const { data } = await axios.get<FaturaApiResp>(
@@ -55,6 +56,21 @@ export class FaturasService {
         const devedor = await this.devedoresRepository.findOneBy({
           cpf: data.beneficiario.cpf,
         });
+
+        this.i++
+
+        console.log({
+          i: this.i,
+          codigo: data.codigo,
+          valor: data.valorCobranca,
+          vencimento: data.dataVencimento,
+          linkFatura: data.linkFatura,
+          codigoBarras: data.linhaDigitavel,
+          codigoPix: data.pixList.brcode,
+          devedor: devedor ? { id: devedor.id } : null,
+          nome: data.beneficiario.nome,
+          cpf: data.beneficiario.cpf
+        })
 
         return {
           codigo: data.codigo,
@@ -73,7 +89,7 @@ export class FaturasService {
             await new Promise((r) => setTimeout(r, 600000));
             continue;
           }
-          if (error.response?.status === 400) return null; // fatura inválida: pula
+          if (error.response?.status === 400) return null; 
         }
         throw error;
       }
@@ -86,10 +102,11 @@ export class FaturasService {
       { headers: this.headers() },
     );
     const numFaturas: string[] = resp.data;
+    console.log(numFaturas)
 
     const respFaturas = await Promise.all(
       numFaturas.map((num) =>
-        this.limite.schedule(() => this.buscarFatura(num)),
+        this.l.schedule(() => this.buscarFatura(num)),
       ),
     );
 
@@ -99,24 +116,24 @@ export class FaturasService {
   async asyncDbFaturas() {
     const faturasApi = await this.getFaturasApi();
     const faturasDb = await this.faturasRepository.find();
-    const hoje = new Date().toISOString().slice(0, 10);
+    const h = new Date().toISOString().slice(0, 10);
 
     for (const faturaDb of faturasDb) {
-      const existeNaApi = faturasApi.some((f) => f.codigo === faturaDb.codigo);
+      const existe = faturasApi.some((f) => f.codigo === faturaDb.codigo);
 
-      if (!existeNaApi && faturaDb.status !== StatusFatura.PAGA) {
+      if (!existe && faturaDb.status !== StatusFatura.PAGA) {
         faturaDb.status = StatusFatura.PAGA;
-        faturaDb.dataPagamento = hoje;
+        faturaDb.dataPagamento = h;
         await this.faturasRepository.save(faturaDb);
       }
     }
 
     for (const faturaApi of faturasApi) {
-      const existeNoDb = faturasDb.some((f) => f.codigo === faturaApi.codigo);
+      const existe = faturasDb.some((f) => f.codigo === faturaApi.codigo);
 
-      if (!existeNoDb) {
-        const nova = this.faturasRepository.create(faturaApi);
-        await this.faturasRepository.save(nova);
+      if (!existe) {
+        const fatura = this.faturasRepository.create(faturaApi);
+        await this.faturasRepository.save(fatura);
       }
     }
   }

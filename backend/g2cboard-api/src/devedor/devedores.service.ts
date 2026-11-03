@@ -4,55 +4,56 @@ import { Repository } from 'typeorm';
 import { DevedorEntity } from './devedor.entity.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { StatusFatura } from '../faturas/status-fatura.js';
+import { StatusDevedor } from './enum/status-devedor.js';
 
 @Injectable()
 export class DevedoresService {
-  constructor(
+
+  constructor (
     @InjectRepository(DevedorEntity)
     private readonly devedorRepository: Repository<DevedorEntity>,
-
     @InjectRepository(FaturasEntity)
-    private readonly faturasRepository: Repository<FaturasEntity>,
+    private readonly faturasRepository: Repository<FaturasEntity>
   ) {}
 
   async sincronizarDevedores() {
     const faturas = await this.faturasRepository.find();
-    const porCpf = new Map<string, FaturasEntity[]>();
+    const devs = new Map<string, FaturasEntity[]>();
 
     for (const fatura of faturas) {
       if (!fatura.cpf) continue;
-      const lista = porCpf.get(fatura.cpf) ?? [];
+      const lista = devs.get(fatura.cpf) ?? [];
       lista.push(fatura);
-      porCpf.set(fatura.cpf, lista);
+      devs.set(fatura.cpf, lista);
     }
 
-    for (const [cpf, faturasDevedor] of porCpf) {
+    for (const [cpf, faturasDevedor] of devs) {
       const totalDevedor = faturasDevedor
         .filter((f) => f.status !== StatusFatura.PAGA)
-        .reduce((soma, f) => soma + Number(f.valor), 0);
+        .reduce((t, f) => t + Number(f.valor), 0);
 
-      const existente = await this.devedorRepository.findOneBy({ cpf });
+      const existe = await this.devedorRepository.findOneBy({ cpf });
 
-      if (!existente) {
+      if (!existe) {
         const dev = this.devedorRepository.create({
           cpf,
           nome: faturasDevedor[0].nome,
           totalDevedor,
           faturas: faturasDevedor,
+          status: totalDevedor === 0 ? StatusDevedor.EMDIA : StatusDevedor.EMATRASO
         });
         await this.devedorRepository.save(dev);
+        console.log(dev)
       } else {
-        existente.totalDevedor = totalDevedor;
-        await this.devedorRepository.save(existente);
+        existe.totalDevedor = totalDevedor;
+        existe.status = totalDevedor === 0 ? StatusDevedor.EMDIA : StatusDevedor.EMATRASO
+        await this.devedorRepository.save(existe);
+        console.log(existe)
       }
     }
   }
 
   async getDevedores() {
     return this.devedorRepository.find({ relations: { faturas: true } });
-  }
-
-  async getDevedoresDb() {
-    return this.getDevedores();
   }
 }

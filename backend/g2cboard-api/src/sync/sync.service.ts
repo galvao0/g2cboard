@@ -5,28 +5,28 @@ import { DevedoresService } from '../devedor/devedores.service.js';
 
 @Injectable()
 export class SyncService implements OnApplicationBootstrap {
-  private rodando = false;
+  private rod = false;
 
   constructor(
-    private readonly faturas: FaturasService,
-    private readonly devedores: DevedoresService,
+    private readonly faturasService: FaturasService,
+    private readonly devedoresService: DevedoresService,
   ) {}
 
   onApplicationBootstrap() {
-    void this.sincronizar();
+    void this.sync();
   }
 
-  @Cron(CronExpression.EVERY_HOUR)
-  async sincronizar() {
-    if (this.rodando) return;
-    this.rodando = true;
+  @Cron(CronExpression.EVERY_10_HOURS)
+  async sync() {
+    if (this.rod) return;
+    this.rod = true;
     try {
-      await this.faturas.asyncDbFaturas();
-      await this.devedores.sincronizarDevedores();
+      await this.faturasService.asyncDbFaturas();
+      await this.devedoresService.sincronizarDevedores();
     } catch (e) {
       console.error('Falha na sincronização', e);
     } finally {
-      this.rodando = false;
+      this.rod = false;
     }
   }
 }

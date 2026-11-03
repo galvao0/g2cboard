@@ -15,7 +15,7 @@
         <svg lucideTrendingDown></svg>
       </div>
       <div>
-        <span>Total devedor</span>
+        <span>Total de Devedores</span>
         <strong>{{ devService.vDev() | currency: 'BRL' : 'symbol' : '1.2-2' }}</strong>
       </div>
     </div>
@@ -70,8 +70,12 @@
               <svg lucideArrowUp [class.down]="devService.ordem() === 'desc'"></svg>
             }
           </th>
-          <th>STATUS</th>
-          <th></th>
+          <th (click)="devService.filtrar('nome')" class="filtro">
+            STATUS
+            @if (devService.filtro() === 'st') {
+              <svg lucideArrownUp [class.down]="devService.ordem() === 'desc'"></svg>
+            }
+          </th>
         </tr>
       </thead>
 
@@ -184,7 +188,7 @@
     </table>
   </div>
 
-  <div class="paginacao">
+  <div class="div">
     <span>
       Página {{ devService.pAtual() }} de {{ devService.tPage() }} ({{
         devService.devsFiltrado().length
@@ -192,7 +196,7 @@
       devedores)
     </span>
 
-    <div class="paginacao-botoes">
+    <div class="div-btns">
       <button type="button" (click)="devService.back()" [disabled]="devService.pAtual() === 1">
         Anterior
       </button>

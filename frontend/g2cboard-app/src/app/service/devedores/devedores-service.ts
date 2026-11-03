@@ -34,7 +34,7 @@ export class DevedoresService {
   readonly qntdPage = 10;
   readonly devOpId = signal<string | null>(null);
   readonly devPesq = signal('');
-  readonly filtro = signal<'nome' | 'v' | 'ven' | 'n' | null>(null);
+  readonly filtro = signal<'nome' | 'v' | 'ven' | 'n' | 'st' | null>(null);
   readonly ordem = signal<'asc' | 'desc'>('asc');
   readonly p = signal<0 | 1 | 3 | 6 | 12>(1);
 
@@ -102,6 +102,10 @@ export class DevedoresService {
 
     if (f === 'n') {
       dados.sort((d1, d2) => d1.faturas.length - d2.faturas.length);
+    }
+
+    if (f === 'st') {
+      dados.sort((d1, d2) => d1.status.localeCompare(d2.nome));
     }
 
     if (ordem === 'desc') dados.reverse();
